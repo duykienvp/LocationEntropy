@@ -55,8 +55,9 @@ public class LocationEntropyCalculator {
 			LOG.info("Location size: " + locationInfos.size());
 			DescriptiveStatistics numUserStat = new DescriptiveStatistics();
 			for (Map.Entry<Integer, Map<Integer, Integer>> entry : locationInfos.entrySet()) {
-				
+				numUserStat.addValue(entry.getValue().size());
 			}
+			LOG.info("Location users statistics: " + numUserStat.toString());
 			
 		} catch (Exception e) {
 			LOG.error("Error calculatin location infos statistics", e);
