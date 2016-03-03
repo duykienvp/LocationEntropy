@@ -1,4 +1,4 @@
-package com.duykien.usc.locationentropy.gowalla;
+package com.duykien.usc.locationentropy.locationdata;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -11,10 +11,10 @@ import org.apache.log4j.Logger;
 
 import com.duykien.usc.locationentropy.grid.GridUtility;
 
-public class GowallaReader {
+public class LocationDataReader {
 	public static final String GOWALLA_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";
 
-	private static final Logger LOG = Logger.getLogger(GowallaReader.class);
+	private static final Logger LOG = Logger.getLogger(LocationDataReader.class);
 
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat(GOWALLA_DATE_FORMAT);
 
@@ -26,14 +26,14 @@ public class GowallaReader {
 	 * @param filePath
 	 * @return list of checkins or empty list if error occurred
 	 */
-	public static ArrayList<GowallaCheckin> read(String filePath, GridUtility gridUtility) {
-		ArrayList<GowallaCheckin> data = new ArrayList<>();
+	public static ArrayList<Checkin> read(String filePath, GridUtility gridUtility) {
+		ArrayList<Checkin> data = new ArrayList<>();
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(filePath));
 			String line = null;
 
 			while ((line = reader.readLine()) != null) {
-				GowallaCheckin checkin = parseGowallaCheckin(line);
+				Checkin checkin = parseGowallaCheckin(line);
 
 				if (checkin != null && gridUtility.isWithin(checkin.getLatitude(), checkin.getLongitude())) {
 					data.add(checkin);
@@ -53,7 +53,7 @@ public class GowallaReader {
 	 * @param line
 	 * @return the checkin or null if error occurred
 	 */
-	public static GowallaCheckin parseGowallaCheckin(String line) {
+	public static Checkin parseGowallaCheckin(String line) {
 		try {
 			StringTokenizer tokenizer = new StringTokenizer(line);
 
@@ -63,7 +63,7 @@ public class GowallaReader {
 			double longitude = Double.parseDouble(tokenizer.nextToken());
 			Integer locationId = Integer.parseInt(tokenizer.nextToken());
 
-			return new GowallaCheckin(uid, parsedDate.getTime(), latitude, longitude, locationId);
+			return new Checkin(uid, parsedDate.getTime(), latitude, longitude, locationId);
 		} catch (Exception e) {
 			LOG.error("Error parsing Gowalla checkin: " + line, e);
 			return null;

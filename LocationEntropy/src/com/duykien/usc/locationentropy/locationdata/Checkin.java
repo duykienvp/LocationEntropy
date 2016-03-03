@@ -1,17 +1,17 @@
-package com.duykien.usc.locationentropy.gowalla;
+package com.duykien.usc.locationentropy.locationdata;
 
-public class GowallaCheckin {
+public class Checkin {
 	private int userId;
 	private long timestamp;
 	private double latitude;
 	private double longitude;
 	private int locationId;
 
-	public GowallaCheckin() {
+	public Checkin() {
 		super();
 	}
 
-	public GowallaCheckin(int userId, long timestamp, double latitude, double longitude, int locationId) {
+	public Checkin(int userId, long timestamp, double latitude, double longitude, int locationId) {
 		super();
 		this.userId = userId;
 		this.timestamp = timestamp;

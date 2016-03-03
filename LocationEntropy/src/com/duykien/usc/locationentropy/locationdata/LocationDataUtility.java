@@ -1,20 +1,20 @@
-package com.duykien.usc.locationentropy.gowalla;
+package com.duykien.usc.locationentropy.locationdata;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
-public class GowallaUtility {
+public class LocationDataUtility {
 	
 	
-	private static final Logger LOG = Logger.getLogger(GowallaUtility.class);
+	private static final Logger LOG = Logger.getLogger(LocationDataUtility.class);
 	
 	/**
 	 * Find the min and max of latitudes and longtitudes
 	 * @param checkins
 	 */
-	public static void findMinMaxLatLong(ArrayList<GowallaCheckin> checkins) {
+	public static void findMinMaxLatLong(ArrayList<Checkin> checkins) {
 		try {
 			final double INF = 1000000000;
 			double minLong = INF;
@@ -22,7 +22,7 @@ public class GowallaUtility {
 			double minLat = INF;
 			double maxLat = -INF;
 			
-			for (GowallaCheckin checkin : checkins) {
+			for (Checkin checkin : checkins) {
 				minLong = Math.min(minLong, checkin.getLongitude());
 				minLat = Math.min(minLat, checkin.getLatitude());
 				maxLong = Math.max(maxLong, checkin.getLongitude());
@@ -36,11 +36,11 @@ public class GowallaUtility {
 		}
 	}
 	
-	public static void saveLatLong(ArrayList<GowallaCheckin> checkins, String file) {
+	public static void saveLatLong(ArrayList<Checkin> checkins, String file) {
 		try {
 			PrintWriter writer = new PrintWriter(file);
 			
-			for (GowallaCheckin checkin : checkins) {
+			for (Checkin checkin : checkins) {
 				writer.println(checkin.getLatitude() + "\t" + checkin.getLongitude());
 			}
 			
