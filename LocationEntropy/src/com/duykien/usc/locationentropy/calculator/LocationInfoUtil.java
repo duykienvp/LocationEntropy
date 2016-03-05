@@ -10,8 +10,9 @@ import org.apache.log4j.Logger;
 import com.duykien.usc.locationentropy.grid.GridUtility;
 import com.duykien.usc.locationentropy.locationdata.Checkin;
 
-public class LocationEntropyCalculator {
-	private static final Logger LOG = Logger.getLogger(LocationEntropyCalculator.class);
+public class LocationInfoUtil {
+	
+	private static final Logger LOG = Logger.getLogger(LocationInfoUtil.class);
 	
 	/**
 	 * Calculate list of user infos of each location from checkins.
@@ -54,18 +55,40 @@ public class LocationEntropyCalculator {
 		return result;
 	}
 	
+	/**
+	 * Calculate statistics of number of users visiting locations
+	 * @param locationInfos
+	 */
 	public static void calLocationInfosStatistics(Map<Integer, Map<Integer, Integer>> locationInfos) {
 		try {
-			int min = 100;
+			int min = 0;
 			LOG.info("min = " + min);
 			LOG.info("Location size: " + locationInfos.size());
 			DescriptiveStatistics numUserStat = new DescriptiveStatistics();
+			int maxNumUser = -1;
 			for (Map.Entry<Integer, Map<Integer, Integer>> entry : locationInfos.entrySet()) {
 				if (min <= entry.getValue().size()) {
 					numUserStat.addValue(entry.getValue().size());
+					maxNumUser = Math.max(maxNumUser, entry.getValue().size());
 				}
 			}
 			LOG.info("Location users statistics: " + numUserStat.toString());
+			/*
+			int[] numUserCount = new int[maxNumUser + 1];
+			for (int i = 0; i < maxNumUser + 1; i++) {
+				numUserCount[i] = 0;
+			}
+			
+			for (Map.Entry<Integer, Map<Integer, Integer>> entry : locationInfos.entrySet()) {
+				if (min <= entry.getValue().size()) {
+					numUserCount[entry.getValue().size()]++;
+				}
+			}
+			for (int i = 1; i < maxNumUser + 1; i++) {
+				System.out.println(i + " " + numUserCount[i]);
+			}
+			
+			*/
 			
 			DescriptiveStatistics numCheckinStat = new DescriptiveStatistics();
 			for (Map.Entry<Integer, Map<Integer, Integer>> entry : locationInfos.entrySet()) {
@@ -81,4 +104,5 @@ public class LocationEntropyCalculator {
 			LOG.error("Error calculatin location infos statistics", e);
 		}
 	}
+
 }

@@ -3,16 +3,17 @@ package com.duykien.usc.locationentropy;
 import java.util.ArrayList;
 import java.util.Map;
 
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
-import com.duykien.usc.locationentropy.calculator.LocationEntropyCalculator;
-import com.duykien.usc.locationentropy.grid.GridUtility;
+import com.duykien.usc.locationentropy.calculator.EntropyCalculator;
+import com.duykien.usc.locationentropy.calculator.LocationInfoUtil;
 import com.duykien.usc.locationentropy.grid.GridUtilityFactory;
 import com.duykien.usc.locationentropy.grid.GridUtilityFactory.Area;
 import com.duykien.usc.locationentropy.locationdata.Checkin;
 import com.duykien.usc.locationentropy.locationdata.LocationDataReader;
-import com.duykien.usc.locationentropy.locationdata.LocationDataUtility;
+import com.duykien.usc.locationentropy.util.Util;
 
 public class LocationEntropyMain {
 	public static final String LOG4J_PROPERTIES_FILE = "log4j.properties";
@@ -21,22 +22,27 @@ public class LocationEntropyMain {
 	public static void main(String[] args) {
 		PropertyConfigurator.configure(LOG4J_PROPERTIES_FILE);
 		
-		String gowallaFile = "/Users/kiennd/Downloads/loc-gowalla_totalCheckins.txt";
-		GridUtility laGridUtility = GridUtilityFactory.createGridUtility(Area.LOS_ANLEGES_500);
+		String file = "/Users/kiennd/Downloads/loc-gowalla_totalCheckins.txt";
+//		String file = "/Users/kiennd/Downloads/loc-brightkite_totalCheckins.txt";
+//		GridUtility laGridUtility = GridUtilityFactory.createGridUtility(Area.LOS_ANLEGES_500);
 		
-		ArrayList<Checkin> checkins = LocationDataReader.read(gowallaFile, laGridUtility);
-		LOG.info("Size LA = " + checkins.size());
+//		ArrayList<Checkin> checkins = LocationDataReader.read(gowallaFile, laGridUtility);
+//		LOG.info("Size LA = " + checkins.size());
 //		GowallaUtility.findMinMaxLatLong(checkins);
 //		GowallaUtility.saveLatLong(checkins, "/Users/kiennd/Downloads/loc-gowalla_totalCheckins_LatLong_LA.txt");
 		
-		Map<Integer, Map<Integer, Integer>> locationInfos = LocationEntropyCalculator.calLocationInfos(checkins, laGridUtility);
-		LocationEntropyCalculator.calLocationInfosStatistics(locationInfos);
-		
-//		checkins = GowallaReader.read(gowallaFile, GridUtilityFactory.createGridUtility(Area.GLOBAL));
-//		LOG.info("Size GLOBAL = " + checkins.size());
-//		
-//		locationInfos = LocationEntropyCalculator.calLocationInfos(checkins, null);
+//		Map<Integer, Map<Integer, Integer>> locationInfos = LocationEntropyCalculator.calLocationInfos(checkins, laGridUtility);
 //		LocationEntropyCalculator.calLocationInfosStatistics(locationInfos);
+		
+		ArrayList<Checkin> checkins = LocationDataReader.read(file, GridUtilityFactory.createGridUtility(Area.GLOBAL));
+		LOG.info("Size GLOBAL = " + checkins.size());
+		
+		Map<Integer, Map<Integer, Integer>> locationInfos = LocationInfoUtil.calLocationInfos(checkins, null);
+//		LocationInfoUtil.calLocationInfosStatistics(locationInfos);
+		
+		Map<Integer, Double> entropies = EntropyCalculator.calShannonEntropyMultiple(locationInfos);
+		DescriptiveStatistics stat = Util.calDescriptiveStatistics(entropies);
+		LOG.info("Entropy stat: " + stat.toString());
 	}
 
 }
