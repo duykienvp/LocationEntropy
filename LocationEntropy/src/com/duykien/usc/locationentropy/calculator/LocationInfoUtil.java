@@ -105,4 +105,27 @@ public class LocationInfoUtil {
 		}
 	}
 
+	public static DescriptiveStatistics calStatOfEntropyChangesWhenRemovingOneUser(Map<Integer, Map<Integer, Integer>> checkins) {
+		DescriptiveStatistics stat = new DescriptiveStatistics();
+		
+		try {
+			for (Map.Entry<Integer, Map<Integer, Integer>> entry : checkins.entrySet()) {
+				if (entry.getValue().size() <= 1)
+					continue;
+				
+				double oldEntropy = EntropyCalculator.calShannonEntropy(entry.getValue());
+				
+				for (Integer userId : entry.getValue().keySet()) {
+					Map<Integer, Integer> tmpMap = new HashMap<>(entry.getValue());
+					tmpMap.remove(userId);
+					double newEntropy = EntropyCalculator.calShannonEntropy(tmpMap);
+					stat.addValue(Math.abs(oldEntropy - newEntropy));
+				}
+			}
+		} catch (Exception e) {
+			LOG.error("Error when calcuting statistics of entropy changes when removing 1 user", e);
+		}
+		
+		return stat;
+	}
 }

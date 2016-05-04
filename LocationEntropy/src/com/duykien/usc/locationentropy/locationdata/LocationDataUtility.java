@@ -36,6 +36,21 @@ public class LocationDataUtility {
 		}
 	}
 	
+	public static void divideByLongitude(ArrayList<Checkin> checkins, ArrayList<Checkin> left, ArrayList<Checkin> right, double lng) {
+		try {
+			left.clear();
+			right.clear();
+			for (Checkin checkin : checkins) {
+				if (checkin.getLongitude() < lng) 
+					left.add(checkin);
+				else
+					right.add(checkin);
+			}
+		} catch (Exception e) {
+			LOG.error("Error dividing", e);
+		}
+	}
+	
 	public static void saveLatLong(ArrayList<Checkin> checkins, String file) {
 		try {
 			PrintWriter writer = new PrintWriter(file);

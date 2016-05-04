@@ -1,0 +1,349 @@
+------- LA ---------
+INFO - min = 0
+INFO - Location size: 18025
+INFO - Location users statistics: DescriptiveStatistics:
+n: 18025
+min: 1.0
+max: 1898.0
+mean: 4.148848821081818
+std dev: 16.227243683439934
+median: 2.0
+
+INFO - Location checkins statistics: DescriptiveStatistics:
+n: 74783
+min: 1.0
+max: 154.0
+mean: 1.4750946070631128
+std dev: 2.4856340567859467
+median: 1.0
+
+------- GLOBAL --------
+INFO - min = 0
+INFO - Location size: 1280956
+INFO - Location users statistics: DescriptiveStatistics:
+n: 1280956
+min: 1.0
+max: 2631.0
+mean: 3.108085679790907
+std dev: 10.69735613801045
+median: 2.0
+
+INFO - Location checkins statistics: DescriptiveStatistics:
+n: 3981321
+min: 1.0
+max: 523.0
+mean: 1.6182726788428383
+std dev: 3.270276248050737
+median: 1.0
+
+------- LA --------
+INFO - min = 10
+INFO - Location size: 18025
+INFO - Location users statistics: DescriptiveStatistics:
+n: 1458
+min: 10.0
+max: 1898.0
+mean: 21.849794238683113
+std dev: 53.58867534804503
+median: 14.0
+skewness: 29.831677667836615
+kurtosis: 1033.469764681111
+
+INFO - Location checkins statistics: DescriptiveStatistics:
+n: 676
+min: 10.0
+max: 154.0
+mean: 19.332840236686387
+std dev: 16.25446313395052
+median: 14.0
+skewness: 4.120884622347282
+kurtosis: 22.00035870894538
+
+------- GLOBAL --------
+INFO - min = 10
+INFO - Location size: 1280956
+INFO - Location users statistics: DescriptiveStatistics:
+n: 57445
+min: 10.0
+max: 2631.0
+mean: 24.1081208112156
+std dev: 45.06060365673446
+median: 15.0
+skewness: 21.303943707842404
+kurtosis: 796.3013728924898
+
+INFO - Location checkins statistics: DescriptiveStatistics:
+n: 52505
+min: 10.0
+max: 523.0
+mean: 20.950538043996318
+std dev: 18.82114495040101
+median: 15.0
+skewness: 5.029995583982258
+kurtosis: 44.19435751285768
+
+------- LA --------
+INFO - min = 20
+INFO - Location size: 18025
+INFO - Location users statistics: DescriptiveStatistics:
+n: 413
+min: 20.0
+max: 1898.0
+mean: 44.072639225181625
+std dev: 97.19377877758501
+median: 27.0
+
+INFO - Location checkins statistics: DescriptiveStatistics:
+n: 192
+min: 20.0
+max: 154.0
+mean: 35.79166666666667
+std dev: 23.157062933364966
+median: 27.0
+
+------- GLOBAL --------
+INFO - min = 20
+INFO - Location size: 1280956
+INFO - Location users statistics: DescriptiveStatistics:
+n: 18145
+min: 20.0
+max: 2631.0
+mean: 48.070101956464484
+std dev: 74.65534153232043
+median: 30.0
+
+INFO - Location checkins statistics: DescriptiveStatistics:
+n: 16655
+min: 20.0
+max: 523.0
+mean: 37.85571900330213
+std dev: 26.12269813855373
+median: 29.0
+
+
+------- LA --------
+INFO - min = 100
+INFO - Location size: 18025
+INFO - Location users statistics: DescriptiveStatistics:
+n: 23
+min: 100.0
+max: 1898.0
+mean: 227.30434782608694
+std dev: 367.3934520600507
+median: 138.0
+
+INFO - Location checkins statistics: DescriptiveStatistics:
+n: 6
+min: 108.0
+max: 154.0
+mean: 127.5
+std dev: 17.963852593472257
+median: 127.0
+
+
+
+------- GLOBAL --------
+INFO - min = 100
+INFO - Location size: 1280956
+INFO - Location users statistics: DescriptiveStatistics:
+n: 1303
+min: 100.0
+max: 2631.0
+mean: 213.64850345356842
+std dev: 210.54554807589474
+median: 153.0
+
+INFO - Location checkins statistics: DescriptiveStatistics:
+n: 587
+min: 100.0
+max: 523.0
+mean: 139.41567291311756
+std dev: 42.812006222641635
+median: 126.0
+
+------- LA GRID 50 --------
+INFO - min = 100
+INFO - Location size: 13614
+INFO - Location users statistics: DescriptiveStatistics:
+n: 25
+min: 100.0
+max: 1898.0
+mean: 224.52
+std dev: 352.1587142184615
+median: 150.0
+
+INFO - Location checkins statistics: DescriptiveStatistics:
+n: 8
+min: 100.0
+max: 154.0
+mean: 121.25
+std dev: 19.13672609707015
+median: 116.0
+
+------- LA GRID 100 --------
+INFO - min = 0
+INFO - Location size: 10217
+INFO - Location users statistics: DescriptiveStatistics:
+n: 10217
+min: 1.0
+max: 1898.0
+mean: 6.368992855045506
+std dev: 22.691383254770805
+median: 3.0
+
+INFO - Location checkins statistics: DescriptiveStatistics:
+n: 65072
+min: 1.0
+max: 219.0
+mean: 1.6952298991885997
+std dev: 3.0193492167182674
+median: 1.0
+
+------- LA GRID 100 --------
+INFO - min = 10
+INFO - Location size: 10217
+INFO - Location users statistics: DescriptiveStatistics:
+n: 1574
+min: 10.0
+max: 1898.0
+mean: 25.879923761118174
+std dev: 53.55859186548289
+median: 17.0
+
+INFO - Location checkins statistics: DescriptiveStatistics:
+n: 856
+min: 10.0
+max: 219.0
+mean: 19.464953271028037
+std dev: 16.68409434786139
+median: 14.0
+
+------- LA GRID 100 --------
+INFO - min = 20
+INFO - Location size: 10217
+INFO - Location users statistics: DescriptiveStatistics:
+n: 640
+min: 20.0
+max: 1898.0
+mean: 44.1640625
+std dev: 80.53257560192043
+median: 30.0
+
+INFO - Location checkins statistics: DescriptiveStatistics:
+n: 247
+min: 20.0
+max: 219.0
+mean: 35.627530364372475
+std dev: 24.13678271121619
+median: 28.0
+
+------- LA GRID 100 --------
+INFO - min = 100
+INFO - Location size: 10217
+INFO - Location users statistics: DescriptiveStatistics:
+n: 35
+min: 100.0
+max: 1898.0
+mean: 202.22857142857143
+std dev: 299.00030353263026
+median: 138.0
+
+INFO - Location checkins statistics: DescriptiveStatistics:
+n: 10
+min: 100.0
+max: 219.0
+mean: 125.1
+std dev: 35.40386042980812
+median: 110.5
+
+------- LA GRID 500 --------
+INFO - min = 0
+INFO - Location size: 3167
+INFO - Location users statistics: DescriptiveStatistics:
+n: 3167
+min: 1.0
+max: 2001.0
+mean: 15.457846542469163
+std dev: 49.45525783616603
+median: 4.0
+skewness: 22.544655811242052
+kurtosis: 832.3150098415446
+
+INFO - Location checkins statistics: DescriptiveStatistics:
+n: 48955
+min: 1.0
+max: 275.0
+mean: 2.253334695128192
+std dev: 4.899813655573277
+median: 1.0
+skewness: 16.889023844918757
+kurtosis: 515.2638189578565
+
+------- LA GRID 500 --------
+INFO - min = 10
+INFO - Location size: 3167
+INFO - Location users statistics: DescriptiveStatistics:
+n: 936
+min: 10.0
+max: 2001.0
+mean: 44.89423076923075
+std dev: 83.89313630817213
+median: 24.0
+skewness: 14.572432844279811
+kurtosis: 318.82025201409175
+
+INFO - Location checkins statistics: DescriptiveStatistics:
+n: 1436
+min: 10.0
+max: 275.0
+mean: 21.110027855153206
+std dev: 19.696877405097013
+median: 15.0
+skewness: 5.108311807575113
+kurtosis: 38.984248230445466
+
+------- LA GRID 500 --------
+INFO - min = 20
+INFO - Location size: 3167
+INFO - Location users statistics: DescriptiveStatistics:
+n: 546
+min: 20.0
+max: 2001.0
+mean: 67.27106227106228
+std dev: 104.23436791504672
+median: 42.0
+skewness: 12.418065465851388
+kurtosis: 218.7077425415591
+
+INFO - Location checkins statistics: DescriptiveStatistics:
+n: 474
+min: 20.0
+max: 275.0
+mean: 37.398734177215196
+std dev: 27.657969854845724
+median: 28.0
+skewness: 3.6996067703203286
+kurtosis: 18.98599484187209
+
+------- LA GRID 500 --------
+INFO - min = 100
+INFO - Location size: 3167
+INFO - Location users statistics: DescriptiveStatistics:
+n: 83
+min: 101.0
+max: 2001.0
+mean: 205.57831325301203
+std dev: 217.28592607504734
+median: 165.0
+skewness: 7.0983788799994025
+kurtosis: 58.15702026982677
+
+INFO - Location checkins statistics: DescriptiveStatistics:
+n: 19
+min: 102.0
+max: 275.0
+mean: 144.10526315789474
+std dev: 41.388262878424456
+median: 136.0
+skewness: 2.052759108279767
+kurtosis: 5.05980363247896
