@@ -1,6 +1,7 @@
 package com.duykien.usc.EBM.dataIO;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -226,6 +228,33 @@ public class EBMDataIO {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new HashMap<>();
+		}
+	}
+	
+	public static void writeList(ArrayList<Integer> list, String outputFile) {
+		try {	
+			PrintWriter writer = new PrintWriter(outputFile);
+			for (int i = 0; i < list.size(); i++) {
+				writer.println(list.get(i));
+			}
+			writer.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static ArrayList<Integer> readList(String inputFile) {
+		try {	
+			ArrayList<Integer> res = new ArrayList<>();
+			Scanner scanner = new Scanner(new File(inputFile));
+			while (scanner.hasNextInt()) {
+				res.add(scanner.nextInt());
+			}
+			scanner.close();
+			return res;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ArrayList<>();
 		}
 	}
 	

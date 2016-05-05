@@ -9,6 +9,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.duykien.usc.EBM.dataIO.EBMDataIO;
+import com.duykien.usc.EBM.util.EBMUtil;
 import com.duykien.usc.locationentropy.grid.GridUtilityFactory;
 import com.duykien.usc.locationentropy.grid.GridUtilityFactory.Area;
 import com.duykien.usc.locationentropy.locationdata.Checkin;
@@ -142,5 +143,29 @@ public class DataPreparator {
 
 		params.file = outputEast;
 		LocationDataIO.write(east, params);
+	}
+	
+	/**
+	 * Divide Gowalla dataset to WEST and EAST part
+	 */
+	public static void calculateUserAndLocationSet(String checkinsFile, String usersFile, String locationFile) {
+		LocationDataIO.Params params = new LocationDataIO.Params();
+		params.file = checkinsFile;
+		params.gridUtility = GridUtilityFactory.createGridUtility(Area.GLOBAL);
+		params.isUserId = true;
+		params.isTimestamp = true;
+		params.isLatitude = true;
+		params.isLongitude = true;
+		params.isLocationId = true;
+		ArrayList<Checkin> checkins = LocationDataIO.read(params);
+		LOG.info("Size GLOBAL = " + checkins.size());
+
+		ArrayList<Integer> users = new ArrayList<>(EBMUtil.getUserSet(checkins));
+		Collections.sort(users);
+		ArrayList<Integer> locs = new ArrayList<>(EBMUtil.getLocationSet(checkins));
+		Collections.sort(locs);
+		
+		EBMDataIO.writeList(users, usersFile);
+		EBMDataIO.writeList(locs, locationFile);
 	}
 }

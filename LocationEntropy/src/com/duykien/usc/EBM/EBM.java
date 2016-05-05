@@ -96,7 +96,17 @@ public class EBM {
 		
 		String userIdMapFile = GOWALLA_DATA_DIR + "loc-gowalla_EBM_userIdMap.txt";
 		String locationIdMapFile = GOWALLA_DATA_DIR + "loc-gowalla_EBM_locationIdMap.txt";
-		DataPreparator.createIndexMap(GOWALLA_DATA_RAW_CHECKIN_FILE, userIdMapFile, locationIdMapFile);
+//		DataPreparator.createIndexMap(GOWALLA_DATA_RAW_CHECKIN_FILE, userIdMapFile, locationIdMapFile);
+		
+		String userListFileWest = GOWALLA_DATA_DIR + "loc-gowalla_EBM_west_users.txt";
+		String locationListFileWest = GOWALLA_DATA_DIR + "loc-gowalla_EBM_west_locations.txt";
+		
+//		DataPreparator.calculateUserAndLocationSet(checkinsWest, userListFileWest, locationListFileWest);
+		
+		String userListFileEast = GOWALLA_DATA_DIR + "loc-gowalla_EBM_east_users.txt";
+		String locationListFileEast = GOWALLA_DATA_DIR + "loc-gowalla_EBM_east_locations.txt";
+		
+//		DataPreparator.calculateUserAndLocationSet(checkinsEast, userListFileEast, locationListFileEast);
 	}
 
 }
