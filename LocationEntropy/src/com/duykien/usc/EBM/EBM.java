@@ -8,6 +8,7 @@ import com.duykien.usc.EBM.calculator.DiversityCalculator;
 import com.duykien.usc.EBM.calculator.FrequencyCalculator;
 import com.duykien.usc.EBM.calculator.LocationEntropyCalculator;
 import com.duykien.usc.EBM.calculator.PotentialPairsCalculator;
+import com.duykien.usc.EBM.calculator.WeightedFrequencyCalculator;
 import com.duykien.usc.EBM.dataprepare.DataPreparator;
 import com.duykien.usc.locationentropy.LocationEntropyMain;
 
@@ -21,8 +22,8 @@ public class EBM {
 	
 	
 	public static final String GOWALLA_DATA_DIR = "/Users/kiennd/Downloads/location_entropy_data/";
-	public static final String GOWALLA_DATA_RAW_FILE = GOWALLA_DATA_DIR + "loc-gowalla_totalCheckins.txt";
-	public static final String GOWALLA_DATA_FILE_CONVERTED_TO_INDEX = GOWALLA_DATA_DIR + "loc-gowalla_totalCheckins_converted_to_index.txt";
+	public static final String GOWALLA_DATA_RAW_CHECKIN_FILE = GOWALLA_DATA_DIR + "loc-gowalla_totalCheckins.txt";
+	public static final String GOWALLA_DATA_CHECKIN_CONVERTED_TO_INDEX_FILE = GOWALLA_DATA_DIR + "loc-gowalla_totalCheckins_converted_to_index.txt";
 	public static final String GOWALLA_COOCCURENCES_FILE = GOWALLA_DATA_DIR + "loc-gowalla_EBM";
 	
 	private static final Logger LOG = Logger.getLogger(LocationEntropyMain.class);
@@ -83,6 +84,19 @@ public class EBM {
 		
 //		System.out.println("Start calculate potentials east");
 //		PotentialPairsCalculator.calculatePotentialPairs(freqEast, potentialsEast);
+		
+		String wfWest = GOWALLA_DATA_DIR + "loc-gowalla_EBM_west_weightedfreq.txt";
+		String wfEast = GOWALLA_DATA_DIR + "loc-gowalla_EBM_east_weightedfreq.txt";
+		
+//		System.out.println("Start calculate weighted frequence west");
+//		WeightedFrequencyCalculator.calculateWeightedFrequency(coocWest, leWest, potentialsWest, wfWest);
+		
+//		System.out.println("Start calculate weighted frequence east");
+//		WeightedFrequencyCalculator.calculateWeightedFrequency(coocEast, leEast, potentialsEast, wfEast);
+		
+		String userIdMapFile = GOWALLA_DATA_DIR + "loc-gowalla_EBM_userIdMap.txt";
+		String locationIdMapFile = GOWALLA_DATA_DIR + "loc-gowalla_EBM_locationIdMap.txt";
+		DataPreparator.createIndexMap(GOWALLA_DATA_RAW_CHECKIN_FILE, userIdMapFile, locationIdMapFile);
 	}
 
 }

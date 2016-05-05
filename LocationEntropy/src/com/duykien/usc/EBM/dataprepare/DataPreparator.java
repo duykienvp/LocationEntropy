@@ -2,14 +2,13 @@ package com.duykien.usc.EBM.dataprepare;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.duykien.usc.EBM.util.EBMUtil;
+import com.duykien.usc.EBM.dataIO.EBMDataIO;
 import com.duykien.usc.locationentropy.grid.GridUtilityFactory;
 import com.duykien.usc.locationentropy.grid.GridUtilityFactory.Area;
 import com.duykien.usc.locationentropy.locationdata.Checkin;
@@ -25,7 +24,7 @@ public class DataPreparator {
 	 * Convert Gowalla dataset to [user_id_index] [timestamp] [lat] [long]
 	 * [location_id_index]
 	 */
-	public static void convertToIndex(String inputFile, String outputFile) {
+	public static void createIndexMap(String inputFile, String userIdMapFile, String locationIdMapFile) {
 		// Read data from file
 		LocationDataIO.Params readParams = new LocationDataIO.Params();
 		readParams.file = inputFile;
@@ -35,7 +34,7 @@ public class DataPreparator {
 		readParams.isLatitude = true;
 		readParams.isLongitude = true;
 		readParams.isLocationId = true;
-		
+
 		ArrayList<Checkin> checkins = LocationDataIO.read(readParams);
 		LOG.info("Size GLOBAL = " + checkins.size());
 
@@ -50,13 +49,9 @@ public class DataPreparator {
 		LOG.info("LocationIds size = " + locationIdToIndex.size() + ", last id = "
 				+ locationIdToIndex.get(locationIdToIndex.size() - 1));
 
-		// create map: location id -> index
-		Map<Integer, Integer> locationIdToIndexMap = new HashMap<>();
-		for (int i = 0; i < locationIdToIndex.size(); i++) {
-			locationIdToIndexMap.put(locationIdToIndex.get(i), i);
-		}
+		EBMDataIO.writeIdToIndex(locationIdToIndex, locationIdMapFile);
 
-		// Find location ids
+		// Find user ids
 		Set<Integer> userIdsSet = new HashSet<>();
 		for (Checkin c : checkins) {
 			userIdsSet.add(c.getUserId());
@@ -67,13 +62,35 @@ public class DataPreparator {
 		LOG.info("userIdToIndex size = " + userIdToIndex.size() + ", last id = "
 				+ userIdToIndex.get(userIdToIndex.size() - 1));
 
+		EBMDataIO.writeIdToIndex(userIdToIndex, userIdMapFile);
+	}
+
+	/**
+	 * Convert Gowalla dataset to [user_id_index] [timestamp] [lat] [long]
+	 * [location_id_index]
+	 */
+	public static void convertToIndex(String inputFile, String userIdToIndexMapFile, String locationIdToIndexMapFile,
+			String outputFile) {
+		// Read data from file
+		LocationDataIO.Params readParams = new LocationDataIO.Params();
+		readParams.file = inputFile;
+		readParams.gridUtility = GridUtilityFactory.createGridUtility(Area.GLOBAL);
+		readParams.isUserId = true;
+		readParams.isDatetimeFormat = true;
+		readParams.isLatitude = true;
+		readParams.isLongitude = true;
+		readParams.isLocationId = true;
+
+		ArrayList<Checkin> checkins = LocationDataIO.read(readParams);
+		LOG.info("Size GLOBAL = " + checkins.size());
+
+		// create map: location id -> index
+		Map<Integer, Integer> locationIdToIndexMap = EBMDataIO.readIdToIndexMap(locationIdToIndexMapFile);
+
 		// create map: user id -> index
-		Map<Integer, Integer> userIdToIndexMap = new HashMap<>();
-		for (int i = 0; i < userIdToIndex.size(); i++) {
-			userIdToIndexMap.put(userIdToIndex.get(i), i);
-		}
-		
-		//write
+		Map<Integer, Integer> userIdToIndexMap = EBMDataIO.readIdToIndexMap(userIdToIndexMapFile);
+
+		// write
 		ArrayList<Checkin> convertedCheckins = new ArrayList<>();
 		for (int i = 0; i < checkins.size(); i++) {
 			Checkin org = checkins.get(i);
@@ -83,10 +100,10 @@ public class DataPreparator {
 			c.setLatitude(org.getLatitude());
 			c.setLongitude(org.getLongitude());
 			c.setLocationId(locationIdToIndexMap.get(org.getLocationId()));
-			
+
 			convertedCheckins.add(c);
 		}
-		
+
 		LocationDataIO.Params writeParams = new LocationDataIO.Params();
 		writeParams.file = outputFile;
 		writeParams.isUserId = true;
@@ -94,7 +111,7 @@ public class DataPreparator {
 		writeParams.isLatitude = true;
 		writeParams.isLongitude = true;
 		writeParams.isLocationId = true;
-		
+
 		LocationDataIO.write(convertedCheckins, writeParams);
 	}
 
@@ -119,10 +136,10 @@ public class DataPreparator {
 		double lng = GOWALLA_WEST_EAST_DIVIDED_LONGITUDE;
 		LocationDataUtility.divideByLongitude(checkins, west, east, lng);
 		LOG.info("lng = " + lng + ", size west = " + west.size() + ", size east = " + east.size());
-		
+
 		params.file = outputWest;
 		LocationDataIO.write(west, params);
-		
+
 		params.file = outputEast;
 		LocationDataIO.write(east, params);
 	}

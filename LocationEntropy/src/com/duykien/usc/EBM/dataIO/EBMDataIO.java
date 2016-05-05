@@ -193,4 +193,68 @@ public class EBMDataIO {
 			return new HashMap<>();
 		}
 	}
+	
+	public static void writeIdToIndex(ArrayList<Integer> list, String outputFile) {
+		try {	
+			PrintWriter writer = new PrintWriter(outputFile);
+			for (int i = 0; i < list.size(); i++) {
+				writer.println(list.get(i) + USER_SEPARATOR + i);
+			}
+			writer.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static Map<Integer, Integer> readIdToIndexMap(String inputFile) {
+		try {	
+			Map<Integer, Integer> data = new HashMap<>();
+			
+			BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+			
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				StringTokenizer tokenizer = new StringTokenizer(line, USER_SEPARATOR);
+				Integer id = Integer.parseInt(tokenizer.nextToken());
+				Integer index = Integer.parseInt(tokenizer.nextToken());
+				
+				data.put(id, index);
+			}
+			
+			reader.close();
+			return data;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new HashMap<>();
+		}
+	}
+	
+	
+	
+	public static Map<Integer, Set<Integer>> readFriendships(String inputFile) {
+		try {	
+			Map<Integer, Set<Integer>> data = new HashMap<>();
+			
+			BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+			
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				StringTokenizer tokenizer = new StringTokenizer(line, USER_SEPARATOR);
+				Integer u = Integer.parseInt(tokenizer.nextToken());
+				Integer v = Integer.parseInt(tokenizer.nextToken());
+				Set<Integer> vs = new HashSet<>();
+				while (tokenizer.hasMoreTokens()) {
+					vs.add(Integer.parseInt(tokenizer.nextToken()));
+				}
+				
+				data.put(u, vs);
+			}
+			
+			reader.close();
+			return data;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new HashMap<>();
+		}
+	}
 }
