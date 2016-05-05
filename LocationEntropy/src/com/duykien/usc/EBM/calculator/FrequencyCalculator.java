@@ -27,10 +27,8 @@ public class FrequencyCalculator {
 				IntIntIntIntMap cooc = EBMDataIO.parseCooccurenceLine(line);
 				Set<Integer> us = cooc.getKeySet();
 				if (us.isEmpty()) {
-					LOG.error("Error calculating freq: u = -1");
-					reader.close();
-					writer.close();
-					return;
+					LOG.error("Error calculating freq");
+					continue;
 				}
 				Integer u = us.iterator().next(); 
 				

@@ -19,7 +19,7 @@ public class WeightedFrequencyCalculator {
 	public static void calculateWeightedFrequency(String cooccurenceFile, String locationEntropyFile, String potentialsFile, String outputFile) {
 		try {
 			PrintWriter writer = new PrintWriter(outputFile);
-			Map<Integer, Double> le = EBMDataIO.readLocationEntropy(locationEntropyFile);
+			Map<Integer, Double> le = EBMDataIO.readIntDoubleMap(locationEntropyFile);
 			Map<Integer, Set<Integer>> potentials = EBMDataIO.readPotentials(potentialsFile);
 			
 			BufferedReader reader = new BufferedReader(new FileReader(cooccurenceFile));
@@ -33,11 +33,12 @@ public class WeightedFrequencyCalculator {
 				}
 				Integer u = us.iterator().next(); 
 				
-				writer.write(u + EBMDataIO.USER_SEPARATOR);
 				if (potentials.containsKey(u) == false) {
 					// there is no potential pair for this user
 					continue;
 				}
+				
+				writer.write(u + EBMDataIO.USER_SEPARATOR);
 				
 				ArrayList<Integer> vs = new ArrayList<>(potentials.get(u));
 				Collections.sort(vs);

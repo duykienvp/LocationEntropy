@@ -21,8 +21,12 @@ public class PotentialPairsCalculator {
 			String line = null;
 			while ((line = reader.readLine()) != null) {
 				IntIntIntMap freqMap = EBMDataIO.parseIntIntIntLine(line);
-				if (freqMap.getKeySet().isEmpty())
+				if (freqMap.getKeySet().isEmpty()) {
+					//only write u
+					line = line.split(EBMDataIO.USER_SEPARATOR)[0];
+					writer.println(line);
 					continue;
+				}
 				
 				Integer u = freqMap.getKeySet().iterator().next();
 				writer.write(u + EBMDataIO.USER_SEPARATOR);

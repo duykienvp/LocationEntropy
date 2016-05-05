@@ -52,7 +52,7 @@ public class LocationEntropyCalculator {
 				leMap.put(loc, hl);
 			}
 				
-			EBMDataIO.writeLocationEntropy(leMap, outputFile);
+			EBMDataIO.writeMap(leMap, outputFile);
 		} catch (Exception e) {
 			LOG.error("Error calculating location entropy", e);
 		}

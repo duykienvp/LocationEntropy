@@ -1,27 +1,20 @@
 package com.duykien.usc.EBM.calculator;
 
-import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 
 import com.duykien.usc.EBM.dataIO.EBMDataIO;
-import com.duykien.usc.EBM.dataprepare.DataPreparator;
 import com.duykien.usc.EBM.util.EBMUtil;
 import com.duykien.usc.locationentropy.grid.GridUtilityFactory;
 import com.duykien.usc.locationentropy.grid.GridUtilityFactory.Area;
 import com.duykien.usc.locationentropy.locationdata.Checkin;
-import com.duykien.usc.locationentropy.locationdata.IntIntIntIntMap;
-import com.duykien.usc.locationentropy.locationdata.IntIntIntMap;
 import com.duykien.usc.locationentropy.locationdata.LocationDataIO;
-import com.duykien.usc.locationentropy.locationdata.LocationDataUtility;
 import com.duykien.usc.locationentropy.locationdata.IntIntPair;
-import com.google.common.collect.Sets;
 
 public class CooccurenceCalculator {
 	public static final double PREC = 1e-12;
@@ -52,9 +45,9 @@ public class CooccurenceCalculator {
 			Map<Integer, Set<Integer>> usersOfLoc = EBMUtil.getUsersOfEachLocation(checkins);
 			
 			//Calculate cooccurrences
-			int countUser = 0;
 			ArrayList<Integer> userList = new ArrayList<>(EBMUtil.getUserSet(checkins));
-			Collections.sort(userList);;
+			Collections.sort(userList);
+			
 			for (Integer u : userList) { // for each user u
 				coocWriter.write(u + EBMDataIO.USER_SEPARATOR);
 				ArrayList<Integer> uLocs = new ArrayList<>(locsOfUser.get(u)); // get locations of u
@@ -79,20 +72,13 @@ public class CooccurenceCalculator {
 								+ coocurrencesCount + EBMDataIO.USER_SEPARATOR);
 					}
 				}
-
-
-				countUser++;
-				if (countUser % 100 == 0) {
-					LOG.info("Calculated cooccurence for " + countUser + " users");
-				}
 				
 				coocWriter.println();
 				coocWriter.flush();
 			}
 			coocWriter.close();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Exception e) {
+			LOG.error("", e);
 		}
 	}
 }

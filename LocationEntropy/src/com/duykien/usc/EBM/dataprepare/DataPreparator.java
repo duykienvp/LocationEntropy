@@ -87,10 +87,10 @@ public class DataPreparator {
 		LOG.info("Size GLOBAL = " + checkins.size());
 
 		// create map: location id -> index
-		Map<Integer, Integer> locationIdToIndexMap = EBMDataIO.readIdToIndexMap(locationIdToIndexMapFile);
+		Map<Integer, Integer> locationIdToIndexMap = EBMDataIO.readIntIntMap(locationIdToIndexMapFile);
 
 		// create map: user id -> index
-		Map<Integer, Integer> userIdToIndexMap = EBMDataIO.readIdToIndexMap(userIdToIndexMapFile);
+		Map<Integer, Integer> userIdToIndexMap = EBMDataIO.readIntIntMap(userIdToIndexMapFile);
 
 		// write
 		ArrayList<Checkin> convertedCheckins = new ArrayList<>();
@@ -173,7 +173,7 @@ public class DataPreparator {
 	
 	public static void divideRelationshipData(String relationshipFile, String userFileWest, String userFileEast, String outputFileWest, String outputFileEast) {
 		try {
-			Map<Integer, Set<Integer>> relationships = EBMDataIO.readRelationships(relationshipFile);
+			Map<Integer, Set<Integer>> relationships = EBMDataIO.readIntToSetIntMap(relationshipFile);
 			Set<Integer> westUsers = new HashSet<>(EBMDataIO.readList(userFileWest));
 			Set<Integer> eastUsers = new HashSet<>(EBMDataIO.readList(userFileEast));
 			PrintWriter westWriter = new PrintWriter(outputFileWest);

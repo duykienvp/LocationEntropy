@@ -91,6 +91,11 @@ public class EBMDataIO {
 		}
 	}
 	
+	/**
+	 * Read a file in which each line is: int int double
+	 * @param inputFile
+	 * @return
+	 */
 	public static IntIntDoubleMap readIntIntDoubleFile(String inputFile) {
 		IntIntDoubleMap data = new IntIntDoubleMap();
 		
@@ -114,6 +119,11 @@ public class EBMDataIO {
 		}
 	}
 	
+	/**
+	 * Read a file in which each line is: int int int
+	 * @param inputFile
+	 * @return
+	 */
 	public static IntIntIntMap readIntIntIntFile(String inputFile) {
 		IntIntIntMap data = new IntIntIntMap();
 		
@@ -137,6 +147,11 @@ public class EBMDataIO {
 		}
 	}
 	
+	/**
+	 * Parse a line with format: int int:int int:int ...
+	 * @param line
+	 * @return
+	 */
 	public static IntIntIntMap parseIntIntIntLine(String line) {
 		IntIntIntMap data = new IntIntIntMap();
 		
@@ -157,7 +172,12 @@ public class EBMDataIO {
 		}
 	} 
 	
-	public static void writeLocationEntropy(Map<Integer, Double> le, String outputFile) {
+	/**
+	 * Write lines with format: int double
+	 * @param le
+	 * @param outputFile
+	 */
+	public static void writeMap(Map<Integer, Double> le, String outputFile) {
 		try {	
 			PrintWriter writer = new PrintWriter(outputFile);
 			ArrayList<Integer> locs = new ArrayList<>(le.keySet());
@@ -172,7 +192,12 @@ public class EBMDataIO {
 		}
 	}
 	
-	public static Map<Integer, Double> readLocationEntropy(String inputFile) {
+	/**
+	 * Read a file in which each line is formated: int double
+	 * @param inputFile
+	 * @return
+	 */
+	public static Map<Integer, Double> readIntDoubleMap(String inputFile) {
 		try {	
 			Map<Integer, Double> le = new HashMap<>();
 			
@@ -194,7 +219,12 @@ public class EBMDataIO {
 		}
 	}
 	
-	public static Map<Integer, Set<Integer>> readPotentials(String inputFile) {
+	/**
+	 * Read a file in which each line is formated: int int:int int:int ...
+	 * @param inputFile
+	 * @return
+	 */
+	public static Map<Integer, Set<Integer>> readIntToSetIntMapFromCombined(String inputFile) {
 		try {	
 			Map<Integer, Set<Integer>> data = new HashMap<>();
 			
@@ -220,6 +250,11 @@ public class EBMDataIO {
 		}
 	}
 	
+	/**
+	 * Write a value to index list
+	 * @param list
+	 * @param outputFile
+	 */
 	public static void writeIdToIndex(ArrayList<Integer> list, String outputFile) {
 		try {	
 			PrintWriter writer = new PrintWriter(outputFile);
@@ -232,7 +267,12 @@ public class EBMDataIO {
 		}
 	}
 	
-	public static Map<Integer, Integer> readIdToIndexMap(String inputFile) {
+	/**
+	 * Read 
+	 * @param inputFile
+	 * @return
+	 */
+	public static Map<Integer, Integer> readIntIntMap(String inputFile) {
 		try {	
 			Map<Integer, Integer> data = new HashMap<>();
 			
@@ -255,6 +295,11 @@ public class EBMDataIO {
 		}
 	}
 	
+	/**
+	 * Write a list to file in which each line is an element
+	 * @param list
+	 * @param outputFile
+	 */
 	public static void writeList(ArrayList<Integer> list, String outputFile) {
 		try {	
 			PrintWriter writer = new PrintWriter(outputFile);
@@ -267,6 +312,11 @@ public class EBMDataIO {
 		}
 	}
 	
+	/**
+	 * Read a list of Integers
+	 * @param inputFile
+	 * @return
+	 */
 	public static ArrayList<Integer> readList(String inputFile) {
 		try {	
 			ArrayList<Integer> res = new ArrayList<>();
@@ -282,9 +332,12 @@ public class EBMDataIO {
 		}
 	}
 	
-	
-	
-	public static Map<Integer, Set<Integer>> readRelationships(String inputFile) {
+	/**
+	 * Read a file in which each line is formated: int int int
+	 * @param inputFile
+	 * @return
+	 */
+	public static Map<Integer, Set<Integer>> readIntToSetIntMap(String inputFile) {
 		try {	
 			Map<Integer, Set<Integer>> data = new HashMap<>();
 			
@@ -310,5 +363,13 @@ public class EBMDataIO {
 			e.printStackTrace();
 			return new HashMap<>();
 		}
+	}
+
+	public static Map<Integer, Set<Integer>> readRelationships(String inputFile) {
+		return readIntToSetIntMap(inputFile);
+	}
+	
+	public static Map<Integer, Set<Integer>> readPotentials(String inputFile) {
+		return readIntToSetIntMapFromCombined(inputFile);
 	}
 }

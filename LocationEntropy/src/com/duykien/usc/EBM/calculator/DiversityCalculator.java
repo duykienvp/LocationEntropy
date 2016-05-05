@@ -5,6 +5,8 @@ import java.io.FileReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -17,11 +19,13 @@ public class DiversityCalculator {
 	public static final double q = 0.1;
 	private static final Logger LOG = Logger.getLogger(DiversityCalculator.class);
 	
-	public static void calculateDiversity(String cooccurenceFile, String frequencyFile, String diversityFile) {
-		try {		
-//			IntIntIntMap freq = EBMDataIO.readIntIntIntFile(frequencyFile);
-			
+	public static void calculateDiversity(String cooccurenceFile, String frequencyFile, String potentialFile, String diversityFile) {
+		try {					
 			PrintWriter writer = new PrintWriter(diversityFile);
+			
+			Map<Integer, Set<Integer>> potentials = EBMDataIO.readPotentials(potentialFile);
+			Set<Integer> potentialsUsers = new HashSet<>(potentials.keySet());
+			potentials.clear();
 			
 			BufferedReader coocReader = new BufferedReader(new FileReader(cooccurenceFile));
 			BufferedReader freqReader = new BufferedReader(new FileReader(frequencyFile));
@@ -36,10 +40,14 @@ public class DiversityCalculator {
 					continue;
 				}
 				Integer u = us.iterator().next();
+				if (potentialsUsers.contains(u) == false) 
+					continue;
 				
 				IntIntIntMap freqMap = EBMDataIO.parseIntIntIntLine(freqLine);
 				if (freqMap.getKeySet().contains(u) == false) {
 //					LOG.error("freq does not contain user " + u);
+					//only write u
+					writer.println(freqLine.split(EBMDataIO.USER_SEPARATOR)[0]);
 					continue;
 				}
 				
