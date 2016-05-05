@@ -6,7 +6,9 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
@@ -160,6 +162,32 @@ public class EBMDataIO {
 			
 			reader.close();
 			return le;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new HashMap<>();
+		}
+	}
+	
+	public static Map<Integer, Set<Integer>> readPotentials(String inputFile) {
+		try {	
+			Map<Integer, Set<Integer>> data = new HashMap<>();
+			
+			BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+			
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				StringTokenizer tokenizer = new StringTokenizer(line, USER_SEPARATOR);
+				Integer u = Integer.parseInt(tokenizer.nextToken());
+				Set<Integer> vs = new HashSet<>();
+				while (tokenizer.hasMoreTokens()) {
+					vs.add(Integer.parseInt(tokenizer.nextToken()));
+				}
+				
+				data.put(u, vs);
+			}
+			
+			reader.close();
+			return data;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new HashMap<>();

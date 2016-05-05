@@ -7,6 +7,7 @@ import com.duykien.usc.EBM.calculator.CooccurenceCalculator;
 import com.duykien.usc.EBM.calculator.DiversityCalculator;
 import com.duykien.usc.EBM.calculator.FrequencyCalculator;
 import com.duykien.usc.EBM.calculator.LocationEntropyCalculator;
+import com.duykien.usc.EBM.calculator.PotentialPairsCalculator;
 import com.duykien.usc.EBM.dataprepare.DataPreparator;
 import com.duykien.usc.locationentropy.LocationEntropyMain;
 
@@ -68,11 +69,20 @@ public class EBM {
 		String leWest = GOWALLA_DATA_DIR + "loc-gowalla_EBM_west_locationentropy.txt";
 		String leEast = GOWALLA_DATA_DIR + "loc-gowalla_EBM_east_locationentropy.txt";
 		
-		System.out.println("Start calculate location entropy west");
-		LocationEntropyCalculator.calculateLocationEntropy(checkinsWest, leWest);
+//		System.out.println("Start calculate location entropy west");
+//		LocationEntropyCalculator.calculateLocationEntropy(checkinsWest, leWest);
 		
-		System.out.println("Start calculate location entropy east");
-		LocationEntropyCalculator.calculateLocationEntropy(checkinsEast, leEast);
+//		System.out.println("Start calculate location entropy east");
+//		LocationEntropyCalculator.calculateLocationEntropy(checkinsEast, leEast);
+		
+		String potentialsWest = GOWALLA_DATA_DIR + "loc-gowalla_EBM_west_potentials.txt";
+		String potentialsEast = GOWALLA_DATA_DIR + "loc-gowalla_EBM_east_potentials.txt";
+		
+//		System.out.println("Start calculate potentials west");
+//		PotentialPairsCalculator.calculatePotentialPairs(freqWest, potentialsWest);
+		
+//		System.out.println("Start calculate potentials east");
+//		PotentialPairsCalculator.calculatePotentialPairs(freqEast, potentialsEast);
 	}
 
 }
