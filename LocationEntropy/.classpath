@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="lib/commons-math3-3.6.jar">
+	<classpathentry kind="lib" path="lib/commons-math3-3.6.jar" sourcepath="/Users/kiennd/Downloads/commons-math3-3.6.1-src.zip">
 		<attributes>
 			<attribute name="javadoc_location" value="jar:platform:/resource/LocationEntropy/lib/commons-math3-3.6-javadoc.jar!/"/>
 		</attributes>

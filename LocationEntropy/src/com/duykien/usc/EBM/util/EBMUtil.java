@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.duykien.usc.locationentropy.locationdata.Checkin;
+import com.duykien.usc.locationentropy.locationdata.IntIntPair;
 
 public class EBMUtil {
 
@@ -71,6 +72,22 @@ public class EBMUtil {
 			users.add(checkin.getUserId());
 			
 			res.put(checkin.getLocationId(), users);
+		}
+		
+		return res;
+	}
+	
+	public static Map<IntIntPair, Integer> getUserLocationCheckinsCount(ArrayList<Checkin> checkins) {
+		Map<IntIntPair, Integer> res = new HashMap<>();
+		
+		for (Checkin c : checkins) {
+			IntIntPair ulp = new IntIntPair(c.getUserId(), c.getLocationId());
+			Integer count = 1;
+			if (res.containsKey(ulp)) {
+				count = res.get(ulp);
+				count++;
+			}
+			res.put(ulp, count);
 		}
 		
 		return res;
