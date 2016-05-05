@@ -1,8 +1,8 @@
 package com.duykien.usc.locationentropy.locationdata;
 
 public class IntIntPair {
-	private int num1;
-	private int num2;
+	public int num1;
+	public int num2;
 	
 	public IntIntPair() {
 		num1 = 0;

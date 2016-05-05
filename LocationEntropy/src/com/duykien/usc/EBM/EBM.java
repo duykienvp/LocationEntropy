@@ -6,6 +6,7 @@ import org.apache.log4j.PropertyConfigurator;
 import com.duykien.usc.EBM.calculator.CooccurenceCalculator;
 import com.duykien.usc.EBM.calculator.DiversityCalculator;
 import com.duykien.usc.EBM.calculator.FrequencyCalculator;
+import com.duykien.usc.EBM.calculator.LocationEntropyCalculator;
 import com.duykien.usc.EBM.dataprepare.DataPreparator;
 import com.duykien.usc.locationentropy.LocationEntropyMain;
 
@@ -63,6 +64,15 @@ public class EBM {
 		
 //		System.out.println("Start dividing data");
 //		DataPreparator.divideData(GOWALLA_DATA_FILE_CONVERTED_TO_INDEX, checkinsEast, checkinsWest);
+		
+		String leWest = GOWALLA_DATA_DIR + "loc-gowalla_EBM_west_locationentropy.txt";
+		String leEast = GOWALLA_DATA_DIR + "loc-gowalla_EBM_east_locationentropy.txt";
+		
+		System.out.println("Start calculate location entropy west");
+		LocationEntropyCalculator.calculateLocationEntropy(checkinsWest, leWest);
+		
+		System.out.println("Start calculate location entropy east");
+		LocationEntropyCalculator.calculateLocationEntropy(checkinsEast, leEast);
 	}
 
 }

@@ -92,4 +92,22 @@ public class EBMUtil {
 		
 		return res;
 	}
+	
+	public static Map<Integer, Integer> getLocationCheckinsCount(ArrayList<Checkin> checkins) {
+		Map<Integer, Integer> res = new HashMap<>();
+		if (checkins == null)
+			return res;
+		
+		for (Checkin c : checkins) {
+			Integer count = res.get(c.getLocationId());
+			if (count == null) {
+				count = 0;
+			}
+			count++;
+			
+			res.put(c.getLocationId(), count);
+		}
+		
+		return res;
+	}
 }

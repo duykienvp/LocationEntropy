@@ -2,6 +2,11 @@ package com.duykien.usc.EBM.dataIO;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
@@ -123,4 +128,41 @@ public class EBMDataIO {
 			return new IntIntIntMap();
 		}
 	} 
+	
+	public static void writeLocationEntropy(Map<Integer, Double> le, String outputFile) {
+		try {	
+			PrintWriter writer = new PrintWriter(outputFile);
+			ArrayList<Integer> locs = new ArrayList<>(le.keySet());
+			Collections.sort(locs);
+			for (Integer l: locs) {
+				writer.println(l + USER_SEPARATOR + le.get(l));
+			}
+			
+			writer.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static Map<Integer, Double> readLocationEntropy(String inputFile) {
+		try {	
+			Map<Integer, Double> le = new HashMap<>();
+			
+			BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+			
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				StringTokenizer tokenizer = new StringTokenizer(line, USER_SEPARATOR);
+				Integer l = Integer.parseInt(tokenizer.nextToken());
+				Double hl = Double.parseDouble(tokenizer.nextToken());
+				le.put(l, hl);
+			}
+			
+			reader.close();
+			return le;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new HashMap<>();
+		}
+	}
 }

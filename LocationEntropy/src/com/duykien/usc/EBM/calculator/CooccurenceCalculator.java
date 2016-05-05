@@ -37,23 +37,8 @@ public class CooccurenceCalculator {
 		readParams.isLongitude = true;
 		readParams.isLocationId = true;
 		ArrayList<Checkin> checkins = LocationDataIO.read(readParams);
-		LOG.info("Size GLOBAL = " + checkins.size());
-
-		// Divide checkins by longitude
-		ArrayList<Checkin> checkinsWest = new ArrayList<>();
-		ArrayList<Checkin> checkinsEast = new ArrayList<>();
-		double lng = DataPreparator.GOWALLA_WEST_EAST_DIVIDED_LONGITUDE;
-		LocationDataUtility.divideByLongitude(checkins, checkinsWest, checkinsEast, lng);
-		LOG.info("lng = " + lng + ", size west = " + checkinsWest.size() + ", size east = " + checkinsEast.size());
-
-		checkins.clear(); // REMOVE RAW CHECKINS
-
-		String outputFileWest = outputFile + "_west_cooccurences.txt";
-		String outputFileEast = outputFile + "_east_cooccurences.txt";
-		calculateCooccurrence(checkinsWest, outputFileWest);
-		checkinsWest.clear();
-		calculateCooccurrence(checkinsEast, outputFileEast);
-		checkinsEast.clear();
+		
+		calculateCooccurrence(checkins, outputFile);
 	}
 
 	public static void calculateCooccurrence(ArrayList<Checkin> checkins, String outputFile) {
