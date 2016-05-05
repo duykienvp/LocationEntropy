@@ -1,5 +1,6 @@
 package com.duykien.usc.EBM.dataprepare;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -119,7 +120,7 @@ public class DataPreparator {
 	/**
 	 * Divide Gowalla dataset to WEST and EAST part
 	 */
-	public static void divideData(String inputFile, String outputEast, String outputWest) {
+	public static void divideCheckinData(String inputFile, String outputEast, String outputWest) {
 		LocationDataIO.Params params = new LocationDataIO.Params();
 		params.file = inputFile;
 		params.gridUtility = GridUtilityFactory.createGridUtility(Area.GLOBAL);
@@ -167,5 +168,37 @@ public class DataPreparator {
 		
 		EBMDataIO.writeList(users, usersFile);
 		EBMDataIO.writeList(locs, locationFile);
+	}
+	
+	
+	public static void divideRelationshipData(String relationshipFile, String userFileWest, String userFileEast, String outputFileWest, String outputFileEast) {
+		try {
+			Map<Integer, Set<Integer>> relationships = EBMDataIO.readRelationships(relationshipFile);
+			Set<Integer> westUsers = new HashSet<>(EBMDataIO.readList(userFileWest));
+			Set<Integer> eastUsers = new HashSet<>(EBMDataIO.readList(userFileEast));
+			PrintWriter westWriter = new PrintWriter(outputFileWest);
+			PrintWriter eastWriter = new PrintWriter(outputFileEast);
+			
+			ArrayList<Integer> us = new ArrayList<>(relationships.keySet());
+			Collections.sort(us);
+			for (Integer u : us) {
+				ArrayList<Integer> vs = new ArrayList<>(relationships.get(u));
+				Collections.sort(vs);
+				
+				for (Integer v : vs) {
+					if (westUsers.contains(u) && westUsers.contains(v)) {
+						westWriter.println(u + EBMDataIO.USER_SEPARATOR + v);
+					}
+					if (eastUsers.contains(u) && eastUsers.contains(v)) {
+						eastWriter.println(u + EBMDataIO.USER_SEPARATOR + v);
+					}
+				}
+			}
+			
+			westWriter.close();
+			eastWriter.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

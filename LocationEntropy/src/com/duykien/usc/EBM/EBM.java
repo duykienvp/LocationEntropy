@@ -8,6 +8,7 @@ import com.duykien.usc.EBM.calculator.DiversityCalculator;
 import com.duykien.usc.EBM.calculator.FrequencyCalculator;
 import com.duykien.usc.EBM.calculator.LocationEntropyCalculator;
 import com.duykien.usc.EBM.calculator.PotentialPairsCalculator;
+import com.duykien.usc.EBM.calculator.SocialStrengthCalculator;
 import com.duykien.usc.EBM.calculator.WeightedFrequencyCalculator;
 import com.duykien.usc.EBM.dataprepare.DataPreparator;
 import com.duykien.usc.locationentropy.LocationEntropyMain;
@@ -107,6 +108,17 @@ public class EBM {
 		String locationListFileEast = GOWALLA_DATA_DIR + "loc-gowalla_EBM_east_locations.txt";
 		
 //		DataPreparator.calculateUserAndLocationSet(checkinsEast, userListFileEast, locationListFileEast);
+		
+		String relationshipFile = GOWALLA_DATA_DIR + "loc-gowalla_edges.txt";
+		String relationshipWestFile = GOWALLA_DATA_DIR + "loc-gowalla_EBM_west_edges.txt";
+		String relationshipEastFile = GOWALLA_DATA_DIR + "loc-gowalla_EBM_east_edges.txt";
+//		DataPreparator.divideRelationshipData(relationshipFile, userListFileWest, userListFileEast, relationshipWestFile, relationshipEastFile);
+		
+		String socialStrengthWestFile = GOWALLA_DATA_DIR + "loc-gowalla_EBM_west_socialstrength.txt";
+		String socialStrengthEastFile = GOWALLA_DATA_DIR + "loc-gowalla_EBM_east_socialstrength.txt";
+		
+//		SocialStrengthCalculator.calculateSocialStrength(relationshipWestFile, userListFileWest, potentialsWest, socialStrengthWestFile);
+//		SocialStrengthCalculator.calculateSocialStrength(relationshipEastFile, userListFileEast, potentialsEast, socialStrengthEastFile);
 	}
 
 }

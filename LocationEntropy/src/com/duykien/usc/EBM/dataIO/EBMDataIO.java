@@ -15,6 +15,7 @@ import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
 
+import com.duykien.usc.locationentropy.locationdata.IntIntDoubleMap;
 import com.duykien.usc.locationentropy.locationdata.IntIntIntIntMap;
 import com.duykien.usc.locationentropy.locationdata.IntIntIntMap;
 
@@ -87,6 +88,29 @@ public class EBMDataIO {
 			return data;
 		} catch (Exception e) {
 			return new IntIntIntIntMap();
+		}
+	}
+	
+	public static IntIntDoubleMap readIntIntDoubleFile(String inputFile) {
+		IntIntDoubleMap data = new IntIntDoubleMap();
+		
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				StringTokenizer tokenizer = new StringTokenizer(line, USER_SEPARATOR);
+				int u = Integer.parseInt(tokenizer.nextToken());
+				int v = Integer.parseInt(tokenizer.nextToken());
+				double c = Double.parseDouble(tokenizer.nextToken());
+				
+				data.add(u, v, c);
+			}
+			reader.close();
+			
+			return data;
+		} catch (Exception e) {
+			LOG.error("Error readIntIntDoubleFile: " + inputFile, e);
+			return new IntIntDoubleMap();
 		}
 	}
 	
@@ -260,7 +284,7 @@ public class EBMDataIO {
 	
 	
 	
-	public static Map<Integer, Set<Integer>> readFriendships(String inputFile) {
+	public static Map<Integer, Set<Integer>> readRelationships(String inputFile) {
 		try {	
 			Map<Integer, Set<Integer>> data = new HashMap<>();
 			
@@ -271,10 +295,11 @@ public class EBMDataIO {
 				StringTokenizer tokenizer = new StringTokenizer(line, USER_SEPARATOR);
 				Integer u = Integer.parseInt(tokenizer.nextToken());
 				Integer v = Integer.parseInt(tokenizer.nextToken());
-				Set<Integer> vs = new HashSet<>();
-				while (tokenizer.hasMoreTokens()) {
-					vs.add(Integer.parseInt(tokenizer.nextToken()));
+				Set<Integer> vs = data.get(u);
+				if (vs == null) {
+					vs = new HashSet<>();
 				}
+				vs.add(v);
 				
 				data.put(u, vs);
 			}
