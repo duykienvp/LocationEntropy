@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.duykien.usc.EBM.calculator.CooccurenceCalculator;
+import com.duykien.usc.EBM.calculator.DiversityCalculator;
 import com.duykien.usc.EBM.calculator.FrequencyCalculator;
 import com.duykien.usc.EBM.dataprepare.DataPreparator;
 import com.duykien.usc.locationentropy.LocationEntropyMain;
@@ -31,11 +32,37 @@ public class EBM {
 
 //		DataPreparator.convertToIndex(GOWALLA_DATA_FILE, GOWALLA_DATA_FILE_CONVERTED_TO_INDEX);
 //		DataPreparator.divideData(GOWALLA_DATA_FILE_CONVERTED_TO_INDEX, "");
+//		System.out.println("Start calculate cooccurrences");
 //		CooccurenceCalculator.calculateCooccurrence(GOWALLA_DATA_FILE_CONVERTED_TO_INDEX, GOWALLA_COOCCURENCES_FILE);
-		FrequencyCalculator.calculateFrequency(GOWALLA_DATA_DIR + "loc-gowalla_EBM_west_cooccurences.txt", 
-				GOWALLA_DATA_DIR + "loc-gowalla_EBM_west_frequency.txt");
-		FrequencyCalculator.calculateFrequency(GOWALLA_DATA_DIR + "loc-gowalla_EBM_east_cooccurences.txt", 
-				GOWALLA_DATA_DIR + "loc-gowalla_EBM_east_frequency.txt");
+		
+		String checkinsWest = GOWALLA_DATA_DIR + "loc-gowalla_EBM_west.txt";
+		String checkinsEast = GOWALLA_DATA_DIR + "loc-gowalla_EBM_east.txt";
+		
+		String coocWest = GOWALLA_DATA_DIR + "loc-gowalla_EBM_west_cooccurences.txt";
+		String freqWest = GOWALLA_DATA_DIR + "loc-gowalla_EBM_west_frequency.txt";
+		
+//		System.out.println("Start calculate freq west");
+//		FrequencyCalculator.calculateFrequency(coocWest, freqWest);
+		
+		String coocEast = GOWALLA_DATA_DIR + "loc-gowalla_EBM_east_cooccurences.txt";
+		String freqEast = GOWALLA_DATA_DIR + "loc-gowalla_EBM_east_frequency.txt";
+		
+//		System.out.println("Start calculate freq east");
+//		FrequencyCalculator.calculateFrequency(coocEast, freqEast);
+		
+		
+		String diversityWest = GOWALLA_DATA_DIR + "loc-gowalla_EBM_west_diversity.txt";
+		
+//		System.out.println("Start calculate diversity west");
+//		DiversityCalculator.calculateDiversity(coocWest, freqWest, diversityWest);
+		
+		String diversityEast = GOWALLA_DATA_DIR + "loc-gowalla_EBM_east_diversity.txt";
+		
+//		System.out.println("Start calculate diversity east");
+//		DiversityCalculator.calculateDiversity(coocEast, freqEast, diversityEast);
+		
+//		System.out.println("Start dividing data");
+//		DataPreparator.divideData(GOWALLA_DATA_FILE_CONVERTED_TO_INDEX, checkinsEast, checkinsWest);
 	}
 
 }

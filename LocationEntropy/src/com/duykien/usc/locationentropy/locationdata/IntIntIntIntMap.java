@@ -74,6 +74,22 @@ public class IntIntIntIntMap {
 		return res;
 	}
 	
+	/**
+	 * Get set of all 3rd entries of the first and 2nd keys
+	 * @param a
+	 * @return
+	 */
+	public Set<Integer> getThirdEntries(int a, int b) {
+		Set<Integer> res = new HashSet<>();
+		
+		IntIntIntMap dA = data.get(a);
+		if (dA != null) {
+			res = new HashSet<>(dA.getSecondEntries(b));
+		}
+		
+		return res;
+	}
+	
 	public Set<Integer> getKeySet() {
 		return new HashSet<>(data.keySet());
 	}

@@ -103,4 +103,24 @@ public class EBMDataIO {
 			return new IntIntIntMap();
 		}
 	}
+	
+	public static IntIntIntMap parseIntIntIntLine(String line) {
+		IntIntIntMap data = new IntIntIntMap();
+		
+		try {
+			StringTokenizer tokenizer = new StringTokenizer(line, USER_SEPARATOR);
+			int u = Integer.parseInt(tokenizer.nextToken());
+			while (tokenizer.hasMoreTokens()) {
+				StringTokenizer freqTokenizer = new StringTokenizer(tokenizer.nextToken(), COUNT_SEPARATOR);
+				int v = Integer.parseInt(freqTokenizer.nextToken());
+				int c = Integer.parseInt(freqTokenizer.nextToken());
+				data.add(u, v, c);
+			}
+			
+			return data;
+		} catch (Exception e) {
+			LOG.error("Error readIntIntIntFile", e);
+			return new IntIntIntMap();
+		}
+	} 
 }

@@ -3,6 +3,7 @@ package com.duykien.usc.EBM.calculator;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -47,22 +48,17 @@ public class CooccurenceCalculator {
 
 		checkins.clear(); // REMOVE RAW CHECKINS
 
-		String outputFileWest = outputFile + "_west";
-		String outputFileEast = outputFile + "_east";
+		String outputFileWest = outputFile + "_west_cooccurences.txt";
+		String outputFileEast = outputFile + "_east_cooccurences.txt";
+		calculateCooccurrence(checkinsWest, outputFileWest);
+		checkinsWest.clear();
+		calculateCooccurrence(checkinsEast, outputFileEast);
+		checkinsEast.clear();
 	}
 
-	public static void calculateCooccurrence(ArrayList<Checkin> checkins, String prefix, String suffix) {
+	public static void calculateCooccurrence(ArrayList<Checkin> checkins, String outputFile) {
 		try {
-			PrintWriter coocWriter = new PrintWriter(prefix + "_cooccurences" + suffix);
-			PrintWriter fWriter = new PrintWriter(prefix + "_F" + suffix);
-			PrintWriter dWriter = new PrintWriter(prefix + "_D" + suffix);
-			PrintWriter freqWriter = new PrintWriter(prefix + "_freq" + suffix);
-			
-			// Get users 
-			Set<Integer> users = EBMUtil.getUserSet(checkins);
-
-			// Get locations
-			Set<Integer> locs = EBMUtil.getLocationSet(checkins);
+			PrintWriter coocWriter = new PrintWriter(outputFile);
 			
 			Map<IntIntPair, Integer> userLocCount = EBMUtil.getUserLocationCheckinsCount(checkins);
 
@@ -71,19 +67,20 @@ public class CooccurenceCalculator {
 			Map<Integer, Set<Integer>> usersOfLoc = EBMUtil.getUsersOfEachLocation(checkins);
 			
 			//Calculate cooccurrences
-			IntIntIntMap freq = new IntIntIntMap();
-			IntIntIntIntMap coocMap = new IntIntIntIntMap();
-			
 			int countUser = 0;
-			for (Integer u : users) { // for each user u
+			ArrayList<Integer> userList = new ArrayList<>(EBMUtil.getUserSet(checkins));
+			Collections.sort(userList);;
+			for (Integer u : userList) { // for each user u
 				coocWriter.write(u + EBMDataIO.USER_SEPARATOR);
-				Set<Integer> uLocs = locsOfUser.get(u); // get locations of u
+				ArrayList<Integer> uLocs = new ArrayList<>(locsOfUser.get(u)); // get locations of u
+				Collections.sort(uLocs);
 
 				for (Integer loc : uLocs) { // for each location l of u
 					IntIntPair ulp = new IntIntPair(u, loc);
 					int ulCount = userLocCount.get(ulp);
 					
-					Set<Integer> vs = usersOfLoc.get(loc); // get users of l
+					ArrayList<Integer> vs = new ArrayList<>(usersOfLoc.get(loc)); // get users of l
+					Collections.sort(vs);
 
 					for (Integer v : vs) { // for each user v of l
 						//(u, v, l)
@@ -92,8 +89,6 @@ public class CooccurenceCalculator {
 						int vlCount = userLocCount.get(vlp);
 						
 						int coocurrencesCount = Math.min(ulCount, vlCount);
-						coocMap.addEntry(u, v, loc, coocurrencesCount);
-						freq.add(u, v, coocurrencesCount);
 						coocWriter.write(v + EBMDataIO.COUNT_SEPARATOR 
 								+ loc + EBMDataIO.COUNT_SEPARATOR 
 								+ coocurrencesCount + EBMDataIO.USER_SEPARATOR);
@@ -110,9 +105,6 @@ public class CooccurenceCalculator {
 				coocWriter.flush();
 			}
 			coocWriter.close();
-			freqWriter.close();
-			fWriter.close();
-			dWriter.close();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

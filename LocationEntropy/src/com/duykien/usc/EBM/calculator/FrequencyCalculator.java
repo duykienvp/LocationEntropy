@@ -13,6 +13,7 @@ import com.duykien.usc.EBM.dataIO.EBMDataIO;
 import com.duykien.usc.locationentropy.locationdata.IntIntIntIntMap;
 
 public class FrequencyCalculator {
+	public static final int MIN_FREQUENCY = 2;
 	
 	private static final Logger LOG = Logger.getLogger(FrequencyCalculator.class);
 	
@@ -25,17 +26,27 @@ public class FrequencyCalculator {
 			while ((line = reader.readLine()) != null) {
 				IntIntIntIntMap cooc = EBMDataIO.parseCooccurenceLine(line);
 				Set<Integer> us = cooc.getKeySet();
-				for (Integer u : us) {
-					ArrayList<Integer> vs = new ArrayList<>(cooc.getSecondEntries(u));
-					Collections.sort(vs);
-					for (Integer v: vs) {
-						if (u != v) {
-							writer.println(u + EBMDataIO.USER_SEPARATOR
-									+ v + EBMDataIO.USER_SEPARATOR
-									+ cooc.sumLastEntries(u, v));
+				if (us.isEmpty()) {
+					LOG.error("Error calculating freq: u = -1");
+					reader.close();
+					writer.close();
+					return;
+				}
+				Integer u = us.iterator().next(); 
+				
+				writer.write(u + EBMDataIO.USER_SEPARATOR);
+				ArrayList<Integer> vs = new ArrayList<>(cooc.getSecondEntries(u));
+				Collections.sort(vs);
+				for (Integer v: vs) {
+					if (u != v) {
+						int c = cooc.sumLastEntries(u, v);
+						if (MIN_FREQUENCY <= c) {
+							writer.write(v + EBMDataIO.COUNT_SEPARATOR 
+									+ c + EBMDataIO.USER_SEPARATOR);
 						}
 					}
 				}
+				writer.println();
 			}
 			
 			reader.close();

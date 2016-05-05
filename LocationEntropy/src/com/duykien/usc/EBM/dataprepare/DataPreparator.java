@@ -101,16 +101,16 @@ public class DataPreparator {
 	/**
 	 * Divide Gowalla dataset to WEST and EAST part
 	 */
-	public static void divideData(String inputFile, String outputDir) {
-		LocationDataIO.Params readParams = new LocationDataIO.Params();
-		readParams.file = inputFile;
-		readParams.gridUtility = GridUtilityFactory.createGridUtility(Area.GLOBAL);
-		readParams.isUserId = true;
-		readParams.isTimestamp = true;
-		readParams.isLatitude = true;
-		readParams.isLongitude = true;
-		readParams.isLocationId = true;
-		ArrayList<Checkin> checkins = LocationDataIO.read(readParams);
+	public static void divideData(String inputFile, String outputEast, String outputWest) {
+		LocationDataIO.Params params = new LocationDataIO.Params();
+		params.file = inputFile;
+		params.gridUtility = GridUtilityFactory.createGridUtility(Area.GLOBAL);
+		params.isUserId = true;
+		params.isTimestamp = true;
+		params.isLatitude = true;
+		params.isLongitude = true;
+		params.isLocationId = true;
+		ArrayList<Checkin> checkins = LocationDataIO.read(params);
 		LOG.info("Size GLOBAL = " + checkins.size());
 
 		// Divide checkins by longitude
@@ -119,15 +119,11 @@ public class DataPreparator {
 		double lng = GOWALLA_WEST_EAST_DIVIDED_LONGITUDE;
 		LocationDataUtility.divideByLongitude(checkins, west, east, lng);
 		LOG.info("lng = " + lng + ", size west = " + west.size() + ", size east = " + east.size());
-
-		// Get users in the West and East
-		Set<Integer> userWest = EBMUtil.getUserSet(west);
-		Set<Integer> userEast = EBMUtil.getUserSet(east);
-		int countUserIntersect = 0;
-		for (Integer i : userWest) {
-			countUserIntersect += (userEast.contains(i) ? 1 : 0);
-		}
-		LOG.info("User set size: west = " + userWest.size() + ", east = " + userEast.size() + ", intersect = "
-				+ countUserIntersect);
+		
+		params.file = outputWest;
+		LocationDataIO.write(west, params);
+		
+		params.file = outputEast;
+		LocationDataIO.write(east, params);
 	}
 }
