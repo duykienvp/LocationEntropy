@@ -7,6 +7,7 @@ import com.duykien.usc.EBM.calculator.CooccurenceCalculator;
 import com.duykien.usc.EBM.calculator.DiversityCalculator;
 import com.duykien.usc.EBM.calculator.EBMParamsCalculator;
 import com.duykien.usc.EBM.calculator.EBMPrediction;
+import com.duykien.usc.EBM.calculator.Evaluator;
 import com.duykien.usc.EBM.calculator.FrequencyCalculator;
 import com.duykien.usc.EBM.calculator.LocationEntropyCalculator;
 import com.duykien.usc.EBM.calculator.PotentialPairsCalculator;
@@ -124,12 +125,13 @@ public class EBM {
 //		EBMParamsCalculator.calculateEBMModelParams(potentialsWest, diversityWest, wfWest, socialStrengthWestFile, modelParamsWestFile);
 //		EBMParamsCalculator.calculateEBMModelParams(potentialsEast, diversityEast, wfEast, socialStrengthEastFile, modelParamsEastFile);
 		
-		System.out.println("Start prediction");
-//		String predictionOutputFile = GOWALLA_DATA_DIR + "loc-gowalla_EBM_east_predictions.txt";
+		String predictionOutputFile = GOWALLA_DATA_DIR + "loc-gowalla_EBM_east_predictions.txt";
+//		System.out.println("Start prediction");
 //		EBMPrediction.calculateEBMModelParams(potentialsEast, diversityEast, wfEast, modelParamsWestFile, predictionOutputFile);
 		
+		String evalOutputFile = GOWALLA_DATA_DIR + "loc-gowalla_EBM_east_evaluations.txt";
 		System.out.println("Start evaluation");
-		
+		Evaluator.evaluate(socialStrengthEastFile, predictionOutputFile, evalOutputFile);
 	}
 
 }
