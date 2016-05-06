@@ -15,6 +15,7 @@ import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
 
+import com.duykien.usc.EBM.datatypes.EBMModelParams;
 import com.duykien.usc.locationentropy.locationdata.IntIntDoubleMap;
 import com.duykien.usc.locationentropy.locationdata.IntIntIntIntMap;
 import com.duykien.usc.locationentropy.locationdata.IntIntIntMap;
@@ -169,6 +170,31 @@ public class EBMDataIO {
 		} catch (Exception e) {
 			LOG.error("Error readIntIntIntFile", e);
 			return new IntIntIntMap();
+		}
+	} 
+	
+	/**
+	 * Parse a line with format: int int:double int:double ...
+	 * @param line
+	 * @return
+	 */
+	public static IntIntDoubleMap parseIntIntDoubleLine(String line) {
+		IntIntDoubleMap data = new IntIntDoubleMap();
+		
+		try {
+			StringTokenizer tokenizer = new StringTokenizer(line, USER_SEPARATOR);
+			int u = Integer.parseInt(tokenizer.nextToken());
+			while (tokenizer.hasMoreTokens()) {
+				StringTokenizer freqTokenizer = new StringTokenizer(tokenizer.nextToken(), COUNT_SEPARATOR);
+				int v = Integer.parseInt(freqTokenizer.nextToken());
+				double c = Double.parseDouble(freqTokenizer.nextToken());
+				data.add(u, v, c);
+			}
+			
+			return data;
+		} catch (Exception e) {
+			LOG.error("Error readIntIntDouble line", e);
+			return new IntIntDoubleMap();
 		}
 	} 
 	
@@ -362,6 +388,18 @@ public class EBMDataIO {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new HashMap<>();
+		}
+	}
+	
+	public static void writeModelParams(EBMModelParams params, String outputFile) {
+		try {	
+			PrintWriter writer = new PrintWriter(outputFile);
+			writer.println(params.alpha);
+			writer.println(params.beta);
+			writer.println(params.gamma);
+			writer.close();
+		} catch (Exception e) {
+			LOG.error("", e);
 		}
 	}
 

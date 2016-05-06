@@ -112,13 +112,16 @@ public class EBM {
 		String socialStrengthWestFile = GOWALLA_DATA_DIR + "loc-gowalla_EBM_west_socialstrength.txt";
 		String socialStrengthEastFile = GOWALLA_DATA_DIR + "loc-gowalla_EBM_east_socialstrength.txt";
 		
-		System.out.println("Start calculate social strength");
-		SocialStrengthCalculator.calculateSocialStrength(relationshipWestFile, userListFileWest, potentialsWest, socialStrengthWestFile);
-		SocialStrengthCalculator.calculateSocialStrength(relationshipEastFile, userListFileEast, potentialsEast, socialStrengthEastFile);
+//		System.out.println("Start calculate social strength");
+//		SocialStrengthCalculator.calculateSocialStrength(relationshipWestFile, userListFileWest, potentialsWest, socialStrengthWestFile);
+//		SocialStrengthCalculator.calculateSocialStrength(relationshipEastFile, userListFileEast, potentialsEast, socialStrengthEastFile);
 		
-//		System.out.println("Start calculate EBM model params");
-//		EBMParamsCalculator.calculateEBMModelParams(potentialsWest, diversityWest, wfWest, socialStrengthWestFile);
-//		EBMParamsCalculator.calculateEBMModelParams(potentialsEast, diversityEast, wfEast, socialStrengthEastFile);
+		String modelParamsWestFile = GOWALLA_DATA_DIR + "loc-gowalla_EBM_west_modelparams.txt";
+		String modelParamsEastFile = GOWALLA_DATA_DIR + "loc-gowalla_EBM_east_modelparams.txt";
+		
+		System.out.println("Start calculate EBM model params");
+		EBMParamsCalculator.calculateEBMModelParams(potentialsWest, diversityWest, wfWest, socialStrengthWestFile, modelParamsWestFile);
+		EBMParamsCalculator.calculateEBMModelParams(potentialsEast, diversityEast, wfEast, socialStrengthEastFile, modelParamsEastFile);
 	}
 
 }
