@@ -391,7 +391,7 @@ public class EBMDataIO {
 		}
 	}
 	
-	public static void writeModelParams(EBMModelParams params, String outputFile) {
+	public static void writeEBMModelParams(EBMModelParams params, String outputFile) {
 		try {	
 			PrintWriter writer = new PrintWriter(outputFile);
 			writer.println(params.alpha);
@@ -400,6 +400,21 @@ public class EBMDataIO {
 			writer.close();
 		} catch (Exception e) {
 			LOG.error("", e);
+		}
+	}
+	
+	public static EBMModelParams readEBMModelParams(String inputFile) {
+		try {	
+			EBMModelParams params = new EBMModelParams();
+			Scanner scanner = new Scanner(new File(inputFile));
+			params.alpha = scanner.nextDouble();
+			params.beta = scanner.nextDouble();
+			params.gamma = scanner.nextDouble();
+			scanner.close();
+			return params;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new EBMModelParams();
 		}
 	}
 
