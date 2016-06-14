@@ -360,28 +360,53 @@ public class RemovingLargestCountChecker {
 		}
 	}
 	
-	public static double case1(double n, double c) {
+	public static double case1WithN(double n, double c) {
 		return Math.log(n-1) - entropyNtimes1AndC(n-1, c);
 	}
 	
-	public static double case2(double n, double c) {
-		double Hk = getHkByNC(n, c);
-		return Math.log(1 + (1.0 / Math.exp(Hk)));
-	}
-	
-	public static double getHkByNC(double n, double c) {
-		double k = getKByNC(n, c);
-		return Math.log(k + (n-k) * c) - ((n - k) * c) / (k + (n-k) * c) * Math.log(c);
+	public static double case2UsingK(double n, double c) {
+		//test 2 cases: floor(k) and floor(k) + 1
+		n = n-1;
+		double k = Math.floor(getKByNC(n, c));
+		//let 1 <= k <= n;
+		k = Math.min(k, n);
+		k = Math.max(1, k);
+		double Hk1 = Math.log(n - k + k*c) - ((k * c) / (n - k + k*c)) * Math.log(c);
+		double deltaH1 = Math.log(1 + (1.0 / Math.exp(Hk1)));
+		
+		k++;
+		//let 1 <= k <= n;
+		k = Math.min(k, n);
+		k = Math.max(1, k);
+		double Hk2 = Math.log(n - k + k*c) - ((k * c) / (n - k + k*c)) * Math.log(c);
+		double deltaH2 = Math.log(1 + (1.0 / Math.exp(Hk2)));
+		return Math.max(deltaH1, deltaH2);
 	}
 	
 	public static double getKByNC(double n, double c) {
-		return (n * c * (c - 1 - Math.log(c))) / ((c-1) * (c-1));
+		return (n * (c*Math.log(c) - c + 1)) / ((c-1) * (c-1));
 	}
 
 	public static double getCkByNC(double n, double c) {
-		long k = Math.round(getKByNC(n-1, c));
-		double Sk = k + (n - 1 - k) * c;
-		return Sk / Math.exp(getHkByNC(n, c));
+		n = n-1;
+		//test 2 cases: floor(k) and floor(k) + 1
+				double k = Math.floor(getKByNC(n, c));
+				//let 1 <= k <= n;
+				k = Math.min(k, n);
+				k = Math.max(1, k);
+				double Hk1 = Math.log(n - k + k*c) - ((k * c) / (n - k + k*c)) * Math.log(c);
+				double deltaH1 = Math.log(1 + (1.0 / Math.exp(Hk1)));
+				
+				k++;
+				//let 1 <= k <= n;
+				k = Math.min(k, n);
+				k = Math.max(1, k);
+				double Hk2 = Math.log(n - k + k*c) - ((k * c) / (n - k + k*c)) * Math.log(c);
+				double deltaH2 = Math.log(1 + (1.0 / Math.exp(Hk2)));
+				if (deltaH2 < deltaH1) {
+					return k-1;
+				}
+				return k;
 	}
 	
 	public static double case2NoK(double n, double c) {
@@ -405,19 +430,19 @@ public class RemovingLargestCountChecker {
 //			return;
 		
 		ArrayList<Double> res = new ArrayList<>();
-		for (double cd = 4; cd < 20; cd++) {
-			for (double nd = 2; nd < 1000000000; nd++) {
+		for (double cd = 5; cd < 6; cd++) {
+			for (double nd = 2; nd < 1000; nd++) {
 				long c = Math.round(cd);
 				long n = Math.round(nd);
 
 				res.clear();
-				if (case1(n, c) > case2NoK(n, c)) {
+				if (case1WithN(n, c) > case2NoK(n, c)) {
 					for (int i = 0; i < n-1; i++) 
 						res.add(1.0);
 					res.add((double)c);
 					String infoStr = "------C = " + c + ", N = " + n;
 					System.out.println(infoStr);
-					System.out.println(case1(n, c));
+					System.out.println(case1WithN(n, c));
 					System.out.println(Arrays.toString(res.toArray()));
 					
 					break;
@@ -432,10 +457,17 @@ public class RemovingLargestCountChecker {
 					String infoStr = "------C = " + c + ", N = " + n;
 					System.out.println(infoStr);
 					System.out.println(k + " " + (double)Math.round(getCkByNC(n, c)));
-					System.out.println(case2(n, c));
+					System.out.println(case2UsingK(n, c));
 					System.out.println(Arrays.toString(res.toArray()));
 				}
 			}
+		}
+	}
+	
+	public static void testFixedC() {
+		int c = 10;
+		for (int n = 2; n < 1001; n++) {
+			System.out.println(n + "," + Math.max(case1WithN(n, c), case2UsingK(n, c)));
 		}
 	}
 	
@@ -453,7 +485,7 @@ public class RemovingLargestCountChecker {
 		for (int c = 2; c < 20; c++) {
 			double v1 = Double.MAX_VALUE;
 			for (int n = 2; n < 10; n++) {
-				System.out.println(c + "\t-- " + n + "\t-- " + case2NoK(n, c));
+				System.out.println(c + "\t-- " + n + "\t-- " + case2NoK(n-1, c));
 			}
 			System.out.println("+++++++");
 		}
@@ -462,22 +494,33 @@ public class RemovingLargestCountChecker {
 	
 	public static void testMaxByAllN() {
 		System.out.println(1 + "," + Math.log(2));
+		int minNCase2 = 2;
 		for (int c = 2; c < 50; c++) {
-			double m = Math.max(deltaH1(c), case2NoK(2, c));
+			double m = Math.max(deltaH1(c), case2UsingK(minNCase2, c));
+//			m = Math.max(m, Math.log(2));
 			System.out.println(c + "," + m);
 		}
 	}
 	public static void testNEquals2() {
 		for (int c = 2; c < 50; c++) {
-			double m = Math.max(deltaH1(c), case2(2, c));
-			System.out.println(c + "\t" + deltaH1(c) + "\t" + case2(2, c));
+			double m = Math.max(deltaH1(c), case2UsingK(2, c));
+			System.out.println(c + "\t" + deltaH1(c) + "\t" + case2UsingK(2, c));
+		}
+	}
+	
+	public static void testK() {
+		int c = 5;
+		for (int n = 2; n < 100; n++) {
+			System.out.println(n + "\t" + getKByNC(n, c));
 		}
 	}
 
 	public static void main(String[] args) {
 		PropertyConfigurator.configure(LOG4J_PROPERTIES_FILE);
+//		testK();
+//		testFixedC();
 //		testNEquals2();
-		testMaxByAllN();
+//		testMaxByAllN();
 //		testCase2();
 //		testWithoutN1();
 //		testNByC5();
@@ -523,7 +566,14 @@ public class RemovingLargestCountChecker {
 //		tryPos(0, 1);
 //		
 //		System.out.println(Math.log(6.0/13.0) + (7.0 / 13.0) * Math.log(7) - Math.log((12 + ck)/12.0));
-		boolean stop = true;
+//		for (int tmp = 2; tmp < 100; tmp++) {
+//			double t = tmp;
+//			if ((t / Math.log(t)) > 2 * Math.E) {
+//				System.out.println(tmp);
+//				break;
+//			}
+//		}
+		boolean stop = false;
 		if (stop)
 			return;
 //		for (int i = 0; i < N; i++) 
@@ -533,16 +583,17 @@ public class RemovingLargestCountChecker {
 //		LOG.info("entropy N +C = " + EntropyCalculator.calShannonEntropy(nums));
 		
 //		LOG.info("From 30 ---->>>>> 50");
-		for (int tC = 5; tC < 8; tC++) {
-			for (int tN = 2; tN < 13; tN++) {
+		for (int tC = 1; tC < 17; tC++) {
+			double maxChangeOfThisC = Double.MIN_VALUE;
+			for (int tN = 2; tN < 10; tN++) {
 				//1131
 				N = tN;
 				C = tC;
 //				String infoStr = "------N = " + N + ", C = " + C;
-				String infoStr = "------C = " + C + ", N = " + N;
+//				String infoStr = "------C = " + C + ", N = " + N;
 //				if (C == 5)
 //					infoStr += " <<<<<<<<";
-				LOG.info(infoStr);
+//				LOG.info(infoStr);
 				TTT = N;
 				nums = new int[TTT];
 				
@@ -558,15 +609,17 @@ public class RemovingLargestCountChecker {
 					nums[i] = 0;
 //				nums[N] = C;
 				tryPos(0, 1);
+				if (maxChangeOfThisC < Math.abs(maxChange))
+					maxChangeOfThisC = Math.abs(maxChange);
 //				LOG.info("minNums=" + Arrays.toString(minNums));
 				
 //				if (checkMaxChangeNums() == false) 
 //					continue;
 				
-				LOG.info("maxChangeValues: " + maxChangeValues.toString());
-				LOG.info("maxChange("+ C + ")=" + maxChange);
-				LOG.info("maxChangeNums=" + Arrays.toString(maxChangeNums));
-				LOG.info("maxChangePos =" + maxChangePos + ", value =" + maxChangeNums[maxChangePos]);
+//				LOG.info("maxChangeValues: " + maxChangeValues.toString());
+//				LOG.info("maxChange("+ C + ")=" + maxChange);
+//				LOG.info("maxChangeNums=" + Arrays.toString(maxChangeNums));
+//				LOG.info("maxChangePos =" + maxChangePos + ", value =" + maxChangeNums[maxChangePos]);
 //				if (checkMaxChangeNums())
 //					break;
 //				break;
@@ -579,6 +632,7 @@ public class RemovingLargestCountChecker {
 //				double n0 = Experiments.findN0(C);
 //				LOG.info("maxH(" + C + ")=" + Experiments.maxH(n0, C));
 			}
+			LOG.info("maxChange("+ C + ")=" + maxChangeOfThisC);
 		}
 		
 		/*
