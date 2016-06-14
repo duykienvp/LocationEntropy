@@ -1,13 +1,15 @@
 package com.duykien.usc.locationentropy.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.log4j.Logger;
 
 public class Util {
-	public static final double PRECISION = 1e-12;
+	public static final double PRECISION = 1e-15;
 	
 	private static final Logger LOG = Logger.getLogger(Util.class);
 	
@@ -21,15 +23,27 @@ public class Util {
 		return stat;
 	}
 	
+	public static boolean isDoubleEqual(double a, double b) {
+		return Math.abs(a - b) < PRECISION;
+	}
+	
+	public static void printArray(double[] nums) {
+		if (nums == null) 
+			return;
+		LOG.info(Arrays.toString(nums));
+	}
+	
 	public static void printlnList(ArrayList<Double> a) {
+		if (a == null) 
+			return;
 		for (int i = 0; i < a.size(); i++) {
-			System.out.println(a.get(i));
+			LOG.info(a.get(i));
 		}
 	}
 	public static void printList(ArrayList<Double> a) {
-		for (int i = 0; i < a.size(); i++) {
-			System.out.print(a.get(i));
-		}
+		if (a == null) 
+			return;
+		LOG.info(a.toString());
 	}
 	
 	/**

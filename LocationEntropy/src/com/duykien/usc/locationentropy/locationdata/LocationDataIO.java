@@ -6,7 +6,9 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
@@ -31,6 +33,8 @@ public class LocationDataIO {
 		public boolean isLongitude;
 		public boolean isLocationId;
 		public int limit;
+		public int maxLocationsOfOneUser;
+		public int maxCheckinsOfOneUserToOneLocation;
 		public GridUtility gridUtility;
 		
 		public Params() {
@@ -42,6 +46,8 @@ public class LocationDataIO {
 			isLongitude = false;
 			isLocationId = false;
 			limit = 0;
+			maxLocationsOfOneUser = Integer.MAX_VALUE;
+			maxCheckinsOfOneUserToOneLocation = Integer.MAX_VALUE;
 			gridUtility = null;
 		}
 	}
@@ -57,6 +63,8 @@ public class LocationDataIO {
 	public static ArrayList<Checkin> read(Params params) {
 		ArrayList<Checkin> data = new ArrayList<>();
 		try {
+			//map for limiting number of locations a user can checkin
+			Map<Integer, Set<Integer>> userToSetOfLocations = new HashMap<>();
 			Map<String, Integer> str2IdMap = new HashMap<String, Integer>();
 			BufferedReader reader = new BufferedReader(new FileReader(params.file));
 			String line = null;
@@ -66,7 +74,8 @@ public class LocationDataIO {
 
 				if (checkin != null
 						&& params.gridUtility != null
-						&& params.gridUtility.isWithin(checkin.getLatitude(), checkin.getLongitude())) {
+						&& params.gridUtility.isWithin(checkin.getLatitude(), checkin.getLongitude())
+						&& checkLimitingNumberOfLocationsPerUser(params.maxLocationsOfOneUser, userToSetOfLocations, checkin)) {
 					data.add(checkin);
 				}
 			}
@@ -76,6 +85,27 @@ public class LocationDataIO {
 			data = new ArrayList<>();
 		}
 		return data;
+	}
+	
+	public static boolean checkLimitingNumberOfLocationsPerUser(int maxLoc, 
+			Map<Integer, Set<Integer>> userToSetOfLocations, 
+			Checkin checkin) {
+		Set<Integer> locs = userToSetOfLocations.get(checkin.getUserId());
+		if (locs == null) {
+			locs = new HashSet<>();
+		}
+		//if this location was already accepted
+		if (locs.contains(checkin.getLocationId()))
+			return true;
+		//if it is not, only accept when we still not reach the maximum
+		if (locs.size() < maxLoc) {
+			locs.add(checkin.getLocationId());
+			userToSetOfLocations.put(checkin.getUserId(), locs);
+			return true;
+		}
+		
+		//reached the maximum
+		return false;
 	}
 
 	/**

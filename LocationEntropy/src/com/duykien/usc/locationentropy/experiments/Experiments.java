@@ -1,5 +1,10 @@
 package com.duykien.usc.locationentropy.experiments;
 
+import org.apache.log4j.PropertyConfigurator;
+
+import com.duykien.usc.EBM.EBM;
+import com.duykien.usc.EBM.calculator.LocationEntropyCalculator;
+
 public class Experiments {
 	public static final String LOG4J_PROPERTIES_FILE = "log4j.properties";
 	
@@ -32,16 +37,32 @@ public class Experiments {
 	}
 
 	public static void main(String[] args) {
-		for (int C = 1; C < 101; C++) {
-			double n0 = findN0(C);
-//			double n0 = 100;
-//			System.out.println(C + "," + n0 + "," + maxH(n0, C));
+		PropertyConfigurator.configure(LOG4J_PROPERTIES_FILE);
+		String reindexedCheckinsFile = EBM.GOWALLA_DATA_DIR + "loc-gowalla_EBM_totalCheckins_converted_to_index.txt";
+		String locationEntropyFilePrefix = EBM.GOWALLA_DATA_DIR + "gowalla_location_entropy";
+		int m = Integer.MAX_VALUE;
+		int c = Integer.MAX_VALUE;
+		String locationEntropyFile = locationEntropyFilePrefix + "_" + m + "_" + c + ".txt";
+//		LocationEntropyCalculator.calculateLocationEntropy(reindexedCheckinsFile, locationEntropyFile, m, c);
+		
+		for (m = 30; m < 51; m++) {
+			for (c = 50; c < 51; c++) {
+				System.out.println("m = " + m + ",\t" + c); 
+				locationEntropyFile = locationEntropyFilePrefix + "_" + m + "_" + c + ".txt";
+				LocationEntropyCalculator.calculateLocationEntropy(reindexedCheckinsFile, locationEntropyFile, m, c);
+			}
 		}
 		
-		double step = 0.01;
-		for (double n = 1; n <= 50; n += step) {
-			System.out.println(n + ", " + maxH(n, 10));
-		}
+//		for (int C = 1; C < 101; C++) {
+//			double n0 = findN0(C);
+//			double n0 = 100;
+//			System.out.println(C + "," + n0 + "," + maxH(n0, C));
+//		}
+		
+//		double step = 0.01;
+//		for (double n = 1; n <= 50; n += step) {
+//			System.out.println(n + ", " + maxH(n, 10));
+//		}
 	}
 
 }

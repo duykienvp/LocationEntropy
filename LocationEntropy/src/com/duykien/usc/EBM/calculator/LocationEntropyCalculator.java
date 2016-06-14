@@ -17,7 +17,10 @@ public class LocationEntropyCalculator {
 	public static final double PREC = 1e-12;
 	private static final Logger LOG = Logger.getLogger(CooccurenceCalculator.class);
 
-	public static void calculateLocationEntropy(String inputFile, String outputFile) {
+	public static void calculateLocationEntropy(String inputFile, 
+			String outputFile,
+			int maxLocationsOfOneUser,
+			int maxCheckinsOfOneUserToOneLocation) {
 		LocationDataIO.Params readParams = new LocationDataIO.Params();
 		readParams.file = inputFile;
 		readParams.gridUtility = GridUtilityFactory.createGridUtility(Area.GLOBAL);
@@ -26,15 +29,17 @@ public class LocationEntropyCalculator {
 		readParams.isLatitude = true;
 		readParams.isLongitude = true;
 		readParams.isLocationId = true;
+		readParams.maxCheckinsOfOneUserToOneLocation = maxCheckinsOfOneUserToOneLocation;
+		readParams.maxLocationsOfOneUser = maxLocationsOfOneUser;
 		ArrayList<Checkin> checkins = LocationDataIO.read(readParams);
 		
-		calculateLocationEntropy(checkins, outputFile);
+		calculateLocationEntropy(checkins, outputFile, maxLocationsOfOneUser);
 	}
 
-	public static void calculateLocationEntropy(ArrayList<Checkin> checkins, String outputFile) {
+	public static void calculateLocationEntropy(ArrayList<Checkin> checkins, String outputFile, int maxLocationsOfOneUser) {
 		try {
-			Map<IntIntPair, Integer> userLocCount = EBMUtil.getUserLocationCheckinsCount(checkins);
-			Map<Integer, Integer> locationCheckinsCount = EBMUtil.getLocationCheckinsCount(checkins);
+			Map<IntIntPair, Integer> userLocCount = EBMUtil.getUserLocationCheckinsCount(checkins, maxLocationsOfOneUser);
+			Map<Integer, Integer> locationCheckinsCount = EBMUtil.getLocationCheckinsCount(userLocCount);
 			
 			Map<Integer, Double> leMap = new HashMap<>();
 			

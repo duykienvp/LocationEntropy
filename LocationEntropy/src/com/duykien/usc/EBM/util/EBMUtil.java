@@ -43,6 +43,12 @@ public class EBMUtil {
 		return locations;
 	}
 	
+	/**
+	 * Calculate the set of locations a user checked in
+	 * Format: user id -> (set of locations)
+	 * @param checkins
+	 * @return
+	 */
 	public static Map<Integer, Set<Integer>> getLocationsOfEachUser(ArrayList<Checkin> checkins) {
 		Map<Integer, Set<Integer>> res = new HashMap<>();
 		
@@ -60,6 +66,12 @@ public class EBMUtil {
 		return res;
 	}
 	
+	/**
+	 * Calculate users who checked in to a location.
+	 * Format: location -> (set of user ids)
+	 * @param checkins
+	 * @return
+	 */
 	public static Map<Integer, Set<Integer>> getUsersOfEachLocation(ArrayList<Checkin> checkins) {
 		Map<Integer, Set<Integer>> res = new HashMap<>();
 		
@@ -77,36 +89,66 @@ public class EBMUtil {
 		return res;
 	}
 	
+	/**
+	 * Calculate the number of checkins of a user to a location 
+	 * Format: (user, location) -> count
+	 * @param checkins
+	 * @return
+	 */
 	public static Map<IntIntPair, Integer> getUserLocationCheckinsCount(ArrayList<Checkin> checkins) {
+		return getUserLocationCheckinsCount(checkins, Integer.MAX_VALUE);
+	}
+	
+	/**
+	 * Calculate the number of checkins of a user to a location 
+	 * with limitation to the maximum number of locations a user can checkin
+	 * Format: (user, location) -> count
+	 * @param checkins
+	 * @return
+	 */
+	public static Map<IntIntPair, Integer> getUserLocationCheckinsCount(ArrayList<Checkin> checkins,
+			int maxLocationsOfOneUser) {
 		Map<IntIntPair, Integer> res = new HashMap<>();
 		
 		for (Checkin c : checkins) {
 			IntIntPair ulp = new IntIntPair(c.getUserId(), c.getLocationId());
-			Integer count = 1;
+			Integer count = 0;
 			if (res.containsKey(ulp)) {
+				//get current count
 				count = res.get(ulp);
-				count++;
 			}
-			res.put(ulp, count);
+			
+			//only add if we do not reach the maximum
+			if (count < maxLocationsOfOneUser) {
+				count++;
+				res.put(ulp, count);
+			}
 		}
 		
 		return res;
 	}
 	
-	public static Map<Integer, Integer> getLocationCheckinsCount(ArrayList<Checkin> checkins) {
+	/**
+	 * Calculate total number of checkins that all users checkins to a location:
+	 * Format: location -> count
+	 * @param userLocCount
+	 * @return
+	 */
+	public static Map<Integer, Integer> getLocationCheckinsCount(Map<IntIntPair, Integer> userLocCount) {
 		Map<Integer, Integer> res = new HashMap<>();
-		if (checkins == null)
-			return res;
 		
-		for (Checkin c : checkins) {
-			Integer count = res.get(c.getLocationId());
+		for (Map.Entry<IntIntPair, Integer> entry : userLocCount.entrySet()) {
+			Integer locId = entry.getKey().num2;
+			Integer count = res.get(locId);
 			if (count == null) {
 				count = 0;
 			}
-			count++;
+			count += entry.getValue();
 			
-			res.put(c.getLocationId(), count);
+			res.put(locId, count);
 		}
+		
+		
 		
 		return res;
 	}

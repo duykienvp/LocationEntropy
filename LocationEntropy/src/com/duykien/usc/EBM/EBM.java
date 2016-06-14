@@ -35,20 +35,35 @@ public class EBM {
 		PropertyConfigurator.configure(LOG4J_PROPERTIES_FILE);
 		System.out.println("Start EBM");
 
+		/*
+		 * Create index from original ids to new ids to reduce storage if we want to use matrices
+		 * Because there are ids that do not exist in the dataset
+		 */
 		String userIdMapFile = GOWALLA_DATA_DIR + "loc-gowalla_EBM_userIdMap.txt";
 		String locationIdMapFile = GOWALLA_DATA_DIR + "loc-gowalla_EBM_locationIdMap.txt";
 //		DataPreparator.createIndexMap(GOWALLA_DATA_RAW_CHECKIN_FILE, userIdMapFile, locationIdMapFile);
 		
-		String reindexedCheckinsFile = GOWALLA_DATA_DIR + "loc-gowalla_EBM_totalCheckins_converted_to_index";
+		/*
+		 * Re-index data using new ids
+		 */
+		String reindexedCheckinsFile = GOWALLA_DATA_DIR + "loc-gowalla_EBM_totalCheckins_converted_to_index.txt";
 		
 //		DataPreparator.convertToIndex(GOWALLA_DATA_RAW_CHECKIN_FILE, userIdMapFile, locationIdMapFile, reindexedCheckinsFile);
 		
+		/*
+		 * Divide data to 2 subsets: west - east
+		 * West: training set
+		 * East: test set
+		 */
 		String checkinsWest = GOWALLA_DATA_DIR + "loc-gowalla_EBM_west.txt";
 		String checkinsEast = GOWALLA_DATA_DIR + "loc-gowalla_EBM_east.txt";
 		
 //		System.out.println("Start dividing data");
 //		DataPreparator.divideCheckinData(reindexedCheckinsFile, checkinsEast, checkinsWest);
 		
+		/*
+		 * Create the list of users and locations in each subset
+		 */
 		String userListFileWest = GOWALLA_DATA_DIR + "loc-gowalla_EBM_west_users.txt";
 		String locationListFileWest = GOWALLA_DATA_DIR + "loc-gowalla_EBM_west_locations.txt";
 		

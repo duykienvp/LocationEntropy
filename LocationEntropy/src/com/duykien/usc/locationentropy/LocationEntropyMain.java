@@ -20,8 +20,11 @@ public class LocationEntropyMain {
 	public static final String LOG4J_PROPERTIES_FILE = "log4j.properties";
 	private static final Logger LOG = Logger.getLogger(LocationEntropyMain.class);
 	
-	
-	
+	public static void main(String[] args) {
+		PropertyConfigurator.configure(LOG4J_PROPERTIES_FILE);
+
+		
+	}
 	
 	public static void testDivide(ArrayList<Checkin> checkins) {
 		ArrayList<Checkin> left = new ArrayList<>();
@@ -32,10 +35,8 @@ public class LocationEntropyMain {
 		}
 	}
 	
-	public static void main(String[] args) {
-		PropertyConfigurator.configure(LOG4J_PROPERTIES_FILE);
-		
-		String file = "/Users/kiennd/Downloads/loc-gowalla_totalCheckins.txt";
+	public static void oldTest() {
+//		String file = "/Users/kiennd/Downloads/loc-gowalla_totalCheckins.txt";
 //		String file = "/Users/kiennd/Downloads/loc-brightkite_totalCheckins.txt";
 //		GridUtility laGridUtility = GridUtilityFactory.createGridUtility(Area.LOS_ANLEGES_500);
 		
@@ -58,7 +59,6 @@ public class LocationEntropyMain {
 //		DescriptiveStatistics stat = Util.calDescriptiveStatistics(entropies);
 //		DescriptiveStatistics stat = LocationInfoUtil.calStatOfEntropyChangesWhenRemovingOneUser(locationInfos);
 //		LOG.info("Entropy stat: " + stat.toString());
-		
 	}
 
 }
