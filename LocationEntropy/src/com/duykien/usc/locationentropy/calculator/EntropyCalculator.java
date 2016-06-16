@@ -19,7 +19,23 @@ public class EntropyCalculator {
 	
 	public static final double PRECISION = Util.PRECISION;
 	
-	private static final Logger LOG = Logger.getLogger(EntropyCalculator.class);	
+	private static final Logger LOG = Logger.getLogger(EntropyCalculator.class);
+	
+	public static double[] toDoubleArray(int[] ns) {
+		double[] tmp = new double[ns.length];
+		for (int i = 0; i < ns.length; i++) 
+			tmp[i] = ns[i];
+		return tmp;
+	}
+	
+	public static double[] toDoubleArray(Object[] ns) {
+		double[] tmp = new double[ns.length];
+		for (int i = 0; i < ns.length; i++) 
+			if (ns[i] instanceof Integer) {
+				tmp[i] = (Integer)ns[i];
+			}
+		return tmp;
+	}
 	
 	/**
 	 * Calculate Shannon entropy of checkins in each location Map: locationId -> (Map: userId -> numCheckins)
