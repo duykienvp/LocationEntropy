@@ -1,4 +1,4 @@
-package com.duykien.usc.locationentropy.DP;
+package com.duykien.usc.GIS.DP;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

@@ -1,4 +1,4 @@
-package com.duykien.usc.locationentropy.DP;
+package com.duykien.usc.GIS.sensitivitycalculator;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;

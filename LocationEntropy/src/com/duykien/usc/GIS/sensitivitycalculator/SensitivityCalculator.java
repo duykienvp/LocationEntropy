@@ -1,4 +1,4 @@
-package com.duykien.usc.locationentropy.DP;
+package com.duykien.usc.GIS.sensitivitycalculator;
 
 /**
  * Calculate bound of the change of location entropy when a user is added or removed

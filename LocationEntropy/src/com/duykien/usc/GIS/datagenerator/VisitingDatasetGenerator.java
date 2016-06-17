@@ -1,19 +1,16 @@
-package com.duykien.usc.datagenerator;
+package com.duykien.usc.GIS.datagenerator;
 
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 import org.apache.commons.math3.distribution.ZipfDistribution;
-
-import com.duykien.usc.locationentropy.calculator.EntropyCalculator;
 
 public class VisitingDatasetGenerator {
 	
@@ -26,7 +23,8 @@ public class VisitingDatasetGenerator {
 	 * 		+ Run m times:
 	 * 			++ l = a location that u has not visited = Zipf(L, ze)  and not visited
 	 * 			++ c = number of visits of u to l = Zipf(maxC, ze) (M: number of elements, ze: exponent)
-	 *  - calculate and write entropy for limiting factors C1, C2
+	 * Output file format:
+	 * for each line: locationId,userid1,visits1,userid3,visits2,.....
 	 * @param L number of locations
 	 * @param N number of users
 	 * @param M maximum number of locations that a user can visit
@@ -34,13 +32,17 @@ public class VisitingDatasetGenerator {
 	 * @param ze zipf exponent
 	 * @param outputFile output file
 	 */
-	public static void generate(int L, int N, int M, int maxC, int C1, int C2, double ze, String outputFile1, String outputFile2) {
-		//Map: location => [visit1, visit2, ...]
-//		Random rand = new Random();
+	public static void generate(int L, 
+			int N, 
+			int M, 
+			int maxC, 
+			double ze, 
+			String outputFile) {
+		//Map: location => (map: userid -> visits)
 		ZipfDistribution zipfM = new ZipfDistribution(M, ze);
 		ZipfDistribution zipfC = new ZipfDistribution(maxC, ze);
 		ZipfDistribution zipfL = new ZipfDistribution(L, ze);
-		Map<Integer, ArrayList<Integer>> dataset = new HashMap<>();
+		Map<Integer, Map<Integer, Integer>> dataset = new HashMap<>();
 		for (int u = 0; u < N; u++) {
 			//a user u
 			
@@ -61,64 +63,66 @@ public class VisitingDatasetGenerator {
 						//number of visits of u to l
 //						int c = rand.nextInt(C) + 1; 
 						int c = zipfC.sample();
-						addData(dataset, l, c);
+						addData(dataset, l, u, c);
 						break;
 					}
 				}
 			}
 		}
 		
-		calculateLocationEntropyAndWriteData(dataset, L, C2, outputFile2);
-		calculateLocationEntropyAndWriteData(dataset, L, C1, outputFile1);
+		writeData(dataset, L, outputFile);
 	}
 	
 	/**
-	 * Calculate and write entropy for limiting factors C
-	 * @param dataset Map: location => [visit1, visit2, ...]
+	 * Write generated data.
+	 * for each line: locationId,userid1,visits1,userid3,visits2,.....
+	 * @param dataset Map: location => (map: userid -> visits)
 	 * @param L number of locations
 	 * @param outputFile output file
 	 */
-	public static void calculateLocationEntropyAndWriteData(Map<Integer, ArrayList<Integer>> dataset, int L, int C, String outputFile) {
+	public static void writeData(Map<Integer, Map<Integer, Integer>> dataset, int L, String outputFile) {
 		try {
 			PrintWriter writer = new PrintWriter(new FileWriter(outputFile));
 			
 			for (int l = 1; l <= L; l++) {
 				if (dataset.containsKey(l) == false)
 					continue;
-				ArrayList<Integer> counts = new ArrayList<>(dataset.get(l));
-				int numUser = 0;
-				double entropy = 0.0;
-				if (counts != null) {
-					for (int i = 0; i < counts.size(); i++) {
-						counts.set(i, Math.max(C, counts.get(i)));
+				
+				Map<Integer, Integer> visitMap = new HashMap<>(dataset.get(l));
+				
+				if (visitMap != null) {
+					ArrayList<Integer> users = new ArrayList<>(visitMap.keySet());
+					Collections.sort(users);
+					
+					writer.print("" + l);
+					for (int i = 0; i < users.size(); i++) {
+						int userId = users.get(i);
+						writer.print("," + userId + "," + visitMap.get(userId));
 					}
-					numUser = counts.size();
-					entropy = EntropyCalculator.calShannonEntropy(EntropyCalculator.toDoubleArray(counts.toArray()));
+					writer.println();
 				}
-				writer.println(l + "," + numUser + "," + entropy);
+				
 			}
 			
 			writer.close();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
 	/**
-	 * Add to the dataset: a user visits location l in total c times
-	 * @param dataset
-	 * @param l
-	 * @param u
-	 * @param c
+	 * Add to the dataset: a user u visits location l in total c times
+	 * @param dataset Map: location => (map: userid -> visits)
+	 * @param l location id
+	 * @param u user id
+	 * @param c number of visits
 	 */
-	public static void addData(Map<Integer, ArrayList<Integer>> dataset, int l, int c) {
-		ArrayList<Integer> lData = dataset.get(l);
+	public static void addData(Map<Integer, Map<Integer, Integer>> dataset, int l, int u, int c) {
+		Map<Integer, Integer> lData = dataset.get(l);
 		if (lData == null) {
-			lData = new ArrayList<>();
+			lData = new HashMap<>();
 		}
-//		lData.add(u);
-		lData.add(c);
+		lData.put(u, c);
 		
 		dataset.put(l, lData);
 	}
@@ -127,16 +131,13 @@ public class VisitingDatasetGenerator {
 		int L = 10000;
 		int N = 1000000;
 		int M = 10;
-		int maxC = 100;
-		int C1 = 10;
-		int C2 = 20;
+		int maxC = 1000;
 		double ze = 1;
 		DecimalFormat df = new DecimalFormat("0.0"); 
 		String outputDir = "/Users/kiennd/Downloads/location_entropy_data/";
-		String outputFile1 = outputDir + "synthetic_data_L" + L + "_N" + N + "_M" + M + "_maxC" + maxC + "_C" + C1 + "_ze" + df.format(ze) + ".csv";
-		String outputFile2 = outputDir + "synthetic_data_L" + L + "_N" + N + "_M" + M + "_maxC" + maxC + "_C" + C2 + "_ze" + df.format(ze) + ".csv";
+		String outputFile = outputDir + "synthetic_data_L" + L + "_N" + N + "_M" + M + "_maxC" + maxC + "_ze" + df.format(ze) + ".csv";
 		System.out.println("Start generating");
-		generate(L, N, M, maxC, C1, C2, ze, outputFile1, outputFile2);
+		generate(L, N, M, maxC, ze, outputFile);
 		System.out.println("Finished generating");
 	}
 
