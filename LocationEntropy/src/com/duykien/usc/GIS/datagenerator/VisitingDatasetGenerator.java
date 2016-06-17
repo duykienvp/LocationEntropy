@@ -12,6 +12,9 @@ import java.util.Set;
 
 import org.apache.commons.math3.distribution.ZipfDistribution;
 
+import com.duykien.usc.GIS.Constants;
+import com.duykien.usc.GIS.FileNameUtil;
+
 public class VisitingDatasetGenerator {
 	
 	/**
@@ -128,16 +131,18 @@ public class VisitingDatasetGenerator {
 	}
 
 	public static void main(String[] args) {
-		int L = 10000;
-		int N = 1000000;
-		int M = 10;
-		int maxC = 1000;
-		double ze = 1;
-		DecimalFormat df = new DecimalFormat("0.0"); 
-		String outputDir = "/Users/kiennd/Downloads/location_entropy_data/";
-		String outputFile = outputDir + "synthetic_data_L" + L + "_N" + N + "_M" + M + "_maxC" + maxC + "_ze" + df.format(ze) + ".csv";
+		int L = Constants.L;
+		int N = Constants.N;
+		int M = Constants.M;
+		int maxC = Constants.MAX_C;
+		double ze = Constants.ZIPF_EXPONENT;
+		DecimalFormat df = Constants.DOUBLE_FORMAT; 
+		
+		String dataGenerationOutputDir = Constants.DATA_GENERATOR_OUTPUT_DIR;
+		String dataGenerationOutputFile = FileNameUtil.getDataGenerationOutputFile(L, N, M, maxC, ze, df, dataGenerationOutputDir);
+		
 		System.out.println("Start generating");
-		generate(L, N, M, maxC, ze, outputFile);
+		generate(L, N, M, maxC, ze, dataGenerationOutputFile);
 		System.out.println("Finished generating");
 	}
 
