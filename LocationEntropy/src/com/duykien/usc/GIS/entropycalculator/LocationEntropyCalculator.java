@@ -41,7 +41,7 @@ public class LocationEntropyCalculator {
 					@SuppressWarnings("unused")
 					int userid = Integer.parseInt(tokenizer.nextToken());
 					
-					Double count = (double) Integer.parseInt(tokenizer.nextToken());
+					Double count = (double) Math.min(Integer.parseInt(tokenizer.nextToken()), C);
 					
 					counts.add(count);
 				}

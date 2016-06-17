@@ -52,9 +52,9 @@ public class LocationEntropyDPMeasureHistogramGenerator {
 				@SuppressWarnings("unused")
 				Integer n = Integer.parseInt(tokenizer.nextToken());
 				Double entropy = Double.parseDouble(tokenizer.nextToken());
-				Double privateEntropy = Double.parseDouble(tokenizer.nextToken());
-				@SuppressWarnings("unused")
-				Double noise = Double.parseDouble(tokenizer.nextToken());
+				Double privateEntropy = entropy;
+				if (tokenizer.hasMoreTokens())
+					privateEntropy = Double.parseDouble(tokenizer.nextToken());
 				
 				int orgBucket = calBucketIndex(bucketSize, entropy);
 				int noiseBuckey = calBucketIndex(bucketSize, privateEntropy); 

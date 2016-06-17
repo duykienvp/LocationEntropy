@@ -4,6 +4,9 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 
+import com.duykien.usc.GIS.Constants;
+import com.duykien.usc.GIS.FileNameUtil;
+
 /**
  * Calculate smooth sensitivity of location entropy when a user is added or removed
  * @author kiennd
@@ -49,25 +52,23 @@ public class SmoothSensitivityCalculator {
 		return maxSensitivityN;
 	}
 
-	public static void calSmoothSensitivity2ndMethod() {
+	public static void calSmoothSensitivity2ndMethod(double eps,
+	double delta,
+	int c,
+	double minSensitivity,
+	double N,
+	String dataGenerationOutputDir) {
 		try {
-			double eps = Math.log(10);
-			double delta = 1e-7;
-			int c = 50;
-			double tolerate = 1e-3;
-			double N = 1000010;
-			String outputDir = "/Users/kiennd/Downloads/location_entropy_data/";
-			String outputFile = outputDir + "varyN_fixedC" + c + "_SmoothSensitivity_EpsLn10_Delta1e-7_Tolerance1e-3"
-					+ ".csv";
 			
+			String outputFile = FileNameUtil.getSensitivityInputFile(dataGenerationOutputDir, c);
 			PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(outputFile)));
 			for (int n = 1; n < N; n++) {
 				double maxSensitivityN = calSmoothSensitivityUsing2ndMethod(c, n, eps, delta);
-				if (maxSensitivityN <  tolerate)
+				if (maxSensitivityN <  minSensitivity)
 					break;
 				writer.println(n + "," + maxSensitivityN);
-				if (n % 10000 == 0) 
-					System.out.println(n);
+//				if (n % 10000 == 0) 
+//					System.out.println(n);
 			}
 			writer.close();
 			
@@ -80,7 +81,15 @@ public class SmoothSensitivityCalculator {
 	public static void main(String[] args) {
 		System.out.println("start");
 		
-		calSmoothSensitivity2ndMethod();
+		double eps = Constants.DP_EPSILON;
+		double delta = Constants.DP_DELTA;
+		
+		double minSensitivity = Constants.MIN_SENSITIVITY;
+		double N = Constants.N + 10;
+		String dataGenerationOutputDir = Constants.DATA_GENERATOR_OUTPUT_DIR;
+		
+		for (int c = 1; c <= 50; c++)
+			calSmoothSensitivity2ndMethod(eps, delta, c, minSensitivity, N, dataGenerationOutputDir);
 		
 		System.out.println("finished");
 	}

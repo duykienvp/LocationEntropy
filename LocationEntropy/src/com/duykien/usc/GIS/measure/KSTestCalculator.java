@@ -35,8 +35,8 @@ public class KSTestCalculator {
 	 * @return  Kolmogorov–Smirnov test of 2 EQUAL-SIZE CDFs or -1 if errors occurred
 	 */
 	public static double calKolmogorovSmirnovTest(ArrayList<Double> l1, ArrayList<Double> l2) {
-		double[] p1 = Util.convertToProbabilityArray(Util.convertDoubleListToDoubleArray(l1));
-		double[] p2 = Util.convertToProbabilityArray(Util.convertDoubleListToDoubleArray(l2));
+		double[] p1 = Util.convertDoubleListToDoubleArray(l1);
+		double[] p2 = Util.convertDoubleListToDoubleArray(l2);
 		
 		return calKolmogorovSmirnovTest(p1, p2);
 	}

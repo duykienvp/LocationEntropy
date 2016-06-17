@@ -125,4 +125,79 @@ public class FileNameUtil {
 		
 		return histogramFile;
 	}
+	
+	public static String getTestResultsFileName(int L,
+			int N,
+			int M,
+			int maxC,
+			double ze,
+			DecimalFormat df, 
+			String dataGenerationOutputDir,
+			String useMStr,
+			double bucketSize) {
+		String histogramFile = dataGenerationOutputDir 
+				+ "synthetic_data_L" + L 
+				+ "_N" + N 
+				+ "_M" + M 
+				+ "_maxC" + maxC 
+				+ "_ze" + df.format(ze) 
+				+ "_DP_SS_epsLn10_delta1e-7_minSen1e-3_" 
+				+ useMStr +"useM" 
+				+"_histogram_bucketSize" + df.format(bucketSize) 
+				+ "_test_results"
+				+".csv";
+		
+		return histogramFile;
+	}
+	
+	/**
+	 * Original entropy file is the entropy when C = maxC
+	 * @param L
+	 * @param N
+	 * @param M
+	 * @param maxC
+	 * @param ze
+	 * @param df
+	 * @param dataGenerationOutputDir
+	 * @return
+	 */
+	public static String getOriginalEntropyFileName(int L,
+			int N,
+			int M,
+			int maxC,
+			double ze,
+			DecimalFormat df, 
+			String dataGenerationOutputDir) {
+		String histogramFile = dataGenerationOutputDir 
+				+ "synthetic_data_L" + L 
+				+ "_N" + N 
+				+ "_M" + M 
+				+ "_maxC" + maxC 
+				+ "_ze" + df.format(ze) 
+				+ "_C" + maxC
+				+"_entropy.csv";
+		
+		return histogramFile;
+	}
+	
+	public static String getOriginalHistogramFileName(int L,
+			int N,
+			int M,
+			int maxC,
+			double ze,
+			DecimalFormat df, 
+			String dataGenerationOutputDir,
+			double bucketSize) {
+		String histogramFile = dataGenerationOutputDir 
+				+ "synthetic_data_L" + L 
+				+ "_N" + N 
+				+ "_M" + M 
+				+ "_maxC" + maxC 
+				+ "_ze" + df.format(ze) 
+				+ "_C" + maxC
+				+"_UNCUT_histogram_bucketSize" 
+				+ df.format(bucketSize) +".csv";
+		
+		return histogramFile;
+	}
 }
