@@ -1,4 +1,4 @@
-package com.duykien.usc.locationentropy.tests;
+package com.duykien.usc.locationentropy.DP;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -15,7 +15,7 @@ import org.apache.commons.math3.distribution.LaplaceDistribution;
 
 import com.duykien.usc.locationentropy.util.Util;
 
-public class DifferentialPrivacyTester {
+public class DifferentialPrivacyNoisePerturbator {
 	
 	private static LaplaceDistribution laplaceDistribution = new LaplaceDistribution(0, 1);
 	
