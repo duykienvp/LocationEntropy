@@ -119,23 +119,25 @@ public class DPLocationEntropy {
 		double bucketSize = Constants.BUCKET_SIZE;
 		
 		String dataGenerationOutputDir = Constants.DATA_GENERATOR_OUTPUT_DIR;
+		String uncutHistogramFile = FileNameUtil.getOriginalHistogramFileName(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, bucketSize);
 	
 		/*
 		 * Original, uncut entropy
 		 */
-		/*
-		String dataGenerationOutputFile = FileNameUtil.getDataGenerationOutputFile(L, N, M, maxC, ze, df, dataGenerationOutputDir);
-		String locationEntropyOutputFile = FileNameUtil.getOriginalEntropyFileName(L, N, M, maxC, ze, df, dataGenerationOutputDir);
-		LocationEntropyCalculator.calLocationEntropy(dataGenerationOutputFile, maxC, locationEntropyOutputFile);
-		LocationEntropyDPMeasureHistogramGenerator.generateHistogram(locationEntropyOutputFile, N, bucketSize, df, uncutHistogramFile);
-		runOriginalEntropy(dataGenerationOutputFile, locationEntropyOutputFile, uncutHistogramFile, N, maxC, df, bucketSize);
-		*/
+		boolean calOriginal = false;
+		if (calOriginal) {
+			String dataGenerationOutputFile = FileNameUtil.getDataGenerationOutputFile(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir);
+			String locationEntropyOutputFile = FileNameUtil.getOriginalEntropyFileName(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir);
+			LocationEntropyCalculator.calLocationEntropy(dataGenerationOutputFile, maxC, locationEntropyOutputFile);
+			LocationEntropyDPMeasureHistogramGenerator.generateHistogram(locationEntropyOutputFile, N, bucketSize, df, uncutHistogramFile);
+				
+		}
 		
 		int startC = Constants.START_C;
 		int endC = Constants.END_C;
 		NoisePertubationMethod noisePertubationMethod = Constants.DP_NOISE_PERTURBATION_METHOD;
 		String noisePerturbationMethodStr = Constants.DP_NOISE_PERTURBATION_METHOD_STR; 
-		String uncutHistogramFile = FileNameUtil.getOriginalHistogramFileName(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, bucketSize);
+		
 		runTestForAllC(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, eps, delta, minSensitivity, useM, useMStr, bucketSize, uncutHistogramFile, startC, endC, noisePertubationMethod, noisePerturbationMethodStr);
 	}
 

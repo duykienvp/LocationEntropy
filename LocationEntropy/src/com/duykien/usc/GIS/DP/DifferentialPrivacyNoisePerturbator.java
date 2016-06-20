@@ -137,7 +137,7 @@ public class DifferentialPrivacyNoisePerturbator {
 					if (sensitivity == null) {
 						sensitivity = minSensitivity;
 					}
-					calSmoothSensitivityNoise2ndMethod(sensitivity, eps, multipleLocationMagnitude);
+					noise = calSmoothSensitivityNoise2ndMethod(sensitivity, eps, multipleLocationMagnitude);
 				} else {
 					//default: GLOBAL_LAPLACE
 					noise = calGlobalLaplaceNoise(c, eps, multipleLocationMagnitude);

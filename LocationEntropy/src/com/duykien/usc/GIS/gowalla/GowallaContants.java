@@ -8,7 +8,8 @@ public class GowallaContants {
 	
 	public static final int GOWALLA_L = 1280955 + 1;
 	public static final int GOWALLA_N = 107091 + 1;
-	public static final String GOWALLA_DATA_GENERATOR_OUTPUT_DIR = Constants.DATA_GENERATOR_OUTPUT_DIR + "gowalla/";
+	public static final String GOWALLA_DATA_GENERATOR_OUTPUT_DIR = "/Users/kiennd/Downloads/location_entropy_data/"
+	+ "gowalla/";
 	public static final String GOWALLA_DATASET_PREFIX = "gowalla";
 	public static final String GOWALLA_DATASET_LA_PREFIX = "gowalla_LA";
 	public static final String GOWALLA_DATASET_NY_PREFIX = "gowalla_NY";
