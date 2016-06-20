@@ -96,6 +96,7 @@ public class LocationEntropyCalculator {
 	}
 
 	public static void main(String[] args) {
+		String prefix = Constants.DATASET_PREFIX;
 		int L = Constants.L;
 		int N = Constants.N;
 		int M = Constants.M;
@@ -104,10 +105,10 @@ public class LocationEntropyCalculator {
 		DecimalFormat df = Constants.DOUBLE_FORMAT;
 		
 		String dataGenerationOutputDir = Constants.DATA_GENERATOR_OUTPUT_DIR;
-		String dataGenerationOutputFile = FileNameUtil.getDataGenerationOutputFile(L, N, M, maxC, ze, df, dataGenerationOutputDir);
+		String dataGenerationOutputFile = FileNameUtil.getDataGenerationOutputFile(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir);
 		
 		int C = Constants.C;
-		String locationEntropyOutputFile = FileNameUtil.getLocationEntropyOutputFile(L, N, M, maxC, ze, df, dataGenerationOutputDir, C);
+		String locationEntropyOutputFile = FileNameUtil.getLocationEntropyOutputFile(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C);
 		
 		calLocationEntropy(dataGenerationOutputFile, C, locationEntropyOutputFile);
 		System.out.println("Finished");

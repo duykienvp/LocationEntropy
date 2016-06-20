@@ -109,6 +109,7 @@ public class LocationEntropyDPMeasureHistogramGenerator {
 	}
 
 	public static void main(String[] args) {
+		String prefix = Constants.DATASET_PREFIX;
 		int L = Constants.L;
 		int N = Constants.N;
 		int M = Constants.M;
@@ -124,10 +125,10 @@ public class LocationEntropyDPMeasureHistogramGenerator {
 		boolean useM = false;
 		String useMStr = useM ? "" : "NOT";
 		
-		String dpOutputFile = FileNameUtil.getDPOutputFile(L, N, M, maxC, ze, df, dataGenerationOutputDir, C, useMStr);
+		String dpOutputFile = FileNameUtil.getDPOutputFile(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C, useMStr);
 		
 		double bucketSize = Constants.BUCKET_SIZE;
-		String histogramFile = FileNameUtil.getHistogramFileName(L, N, M, maxC, ze, df, dataGenerationOutputDir, C, useMStr, bucketSize);
+		String histogramFile = FileNameUtil.getHistogramFileName(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C, useMStr, bucketSize);
 		generateHistogram(dpOutputFile, N, bucketSize, df, histogramFile);
 		
 		System.out.println("Finished");

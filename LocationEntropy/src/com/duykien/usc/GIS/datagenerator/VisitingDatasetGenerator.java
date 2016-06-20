@@ -114,7 +114,7 @@ public class VisitingDatasetGenerator {
 	}
 	
 	/**
-	 * Add to the dataset: a user u visits location l in total c times
+	 * Add to the dataset: a user u visits location l in c times more
 	 * @param dataset Map: location => (map: userid -> visits)
 	 * @param l location id
 	 * @param u user id
@@ -125,12 +125,19 @@ public class VisitingDatasetGenerator {
 		if (lData == null) {
 			lData = new HashMap<>();
 		}
-		lData.put(u, c);
+		Integer count = lData.get(u);
+		if (count == null) {
+			count = 0;
+		}
+		count += c;
+		
+		lData.put(u, count);
 		
 		dataset.put(l, lData);
 	}
 
 	public static void main(String[] args) {
+		String prefix = Constants.DATASET_PREFIX;
 		int L = Constants.L;
 		int N = Constants.N;
 		int M = Constants.M;
@@ -139,7 +146,7 @@ public class VisitingDatasetGenerator {
 		DecimalFormat df = Constants.DOUBLE_FORMAT; 
 		
 		String dataGenerationOutputDir = Constants.DATA_GENERATOR_OUTPUT_DIR;
-		String dataGenerationOutputFile = FileNameUtil.getDataGenerationOutputFile(L, N, M, maxC, ze, df, dataGenerationOutputDir);
+		String dataGenerationOutputFile = FileNameUtil.getDataGenerationOutputFile(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir);
 		
 		System.out.println("Start generating");
 		generate(L, N, M, maxC, ze, dataGenerationOutputFile);

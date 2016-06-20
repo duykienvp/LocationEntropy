@@ -135,6 +135,7 @@ public class DifferentialPrivacyNoisePerturbator {
 
 
 	public static void main(String[] args) {
+		String prefix = Constants.DATASET_PREFIX;
 		int L = Constants.L;
 		int N = Constants.N;
 		int M = Constants.M;
@@ -145,7 +146,7 @@ public class DifferentialPrivacyNoisePerturbator {
 		String dataGenerationOutputDir = Constants.DATA_GENERATOR_OUTPUT_DIR;
 		
 		int C = Constants.C;
-		String locationEntropyOutputFile = FileNameUtil.getLocationEntropyOutputFile(L, N, M, maxC, ze, df, dataGenerationOutputDir, C);
+		String locationEntropyOutputFile = FileNameUtil.getLocationEntropyOutputFile(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C);
 		
 		//Differential privacy 
 		double eps = Constants.DP_EPSILON; 
@@ -156,7 +157,7 @@ public class DifferentialPrivacyNoisePerturbator {
 		
 		String sensitivityInputFile = FileNameUtil.getSensitivityInputFile(dataGenerationOutputDir, C);
 		
-		String dpOutputFile = FileNameUtil.getDPOutputFile(L, N, M, maxC, ze, df, dataGenerationOutputDir, C, useMStr);
+		String dpOutputFile = FileNameUtil.getDPOutputFile(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C, useMStr);
 		perturbUnderDP(locationEntropyOutputFile, sensitivityInputFile, N, M, C, eps, delta, minSensitivity, useM, dpOutputFile);
 		System.out.println("Finished");
 	}

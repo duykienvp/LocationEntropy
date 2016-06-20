@@ -4,15 +4,17 @@ import java.text.DecimalFormat;
 
 public class FileNameUtil {
 
-	public static String getDataGenerationOutputFile(int L,
+	public static String getDataGenerationOutputFile(String prefix,
+			int L,
 			int N,
 			int M,
 			int maxC,
 			double ze,
 			DecimalFormat df, 
 			String dataGenerationOutputDir) {
-		String dataGenerationOutputFile = dataGenerationOutputDir 
-				+ "synthetic_data_L" + L 
+		String dataGenerationOutputFile = dataGenerationOutputDir
+				+ prefix
+				+ "_L" + L 
 				+ "_N" + N 
 				+ "_M" + M 
 				+ "_maxC" + maxC 
@@ -21,7 +23,8 @@ public class FileNameUtil {
 		return dataGenerationOutputFile;
 	}
 	
-	public static String getLocationEntropyOutputFile(int L,
+	public static String getLocationEntropyOutputFile(String prefix,
+			int L,
 			int N,
 			int M,
 			int maxC,
@@ -29,8 +32,9 @@ public class FileNameUtil {
 			DecimalFormat df, 
 			String dataGenerationOutputDir,
 			int C) {
-		String locationEntropyOutputFile = dataGenerationOutputDir 
-				+ "synthetic_data_L" + L 
+		String locationEntropyOutputFile = dataGenerationOutputDir
+				+ prefix
+				+ "_L" + L 
 				+ "_N" + N 
 				+ "_M" + M 
 				+ "_maxC" + maxC 
@@ -46,12 +50,16 @@ public class FileNameUtil {
 			int C) {
 		String sensitivityInputFile = dataGenerationOutputDir 
 				+ "varyN_fixedC" + C 
-				+ "_SmoothSensitivity_EpsLn10_Delta1e-7_Tolerance1e-3"
+				+ "_SmoothSensitivity" 
+				+ "_eps" + Constants.DP_EPSILON_STR 
+				+ "_Delta"+ Constants.DP_DELTA_STR 
+				+ "_minSen" + Constants.DP_MIN_SENSITIVITY_STR
 				+ ".csv";
 		return sensitivityInputFile;
 	}
 	
-	public static String getDPOutputFile(int L,
+	public static String getDPOutputFile(String prefix,
+			int L,
 			int N,
 			int M,
 			int maxC,
@@ -60,22 +68,27 @@ public class FileNameUtil {
 			String dataGenerationOutputDir,
 			int C,
 			String useMStr) {
-		String dpOutputFile = dataGenerationOutputDir 
-				+ "synthetic_data_L" + L 
+		String dpOutputFile = dataGenerationOutputDir
+				+ prefix
+				+ "_L" + L 
 				+ "_N" + N 
 				+ "_M" + M 
 				+ "_maxC" + maxC 
 				+ "_ze" + df.format(ze) 
 				+ "_C" + C
 				+ "_entropy"
-				+ "_DP_SS_epsLn10_delta1e-7_minSen1e-3_" 
-				+ useMStr +"useM"
+				+ "_DP_SS" 
+				+ "_eps" + Constants.DP_EPSILON_STR 
+				+ "_Delta"+ Constants.DP_DELTA_STR 
+				+ "_minSen" + Constants.DP_MIN_SENSITIVITY_STR
+				+ "_" + useMStr +"useM"
 				+ ".csv";
 		
 		return dpOutputFile;
 	}
 	
-	public static String getHistogramFileName(int L,
+	public static String getHistogramFileName(String prefix,
+			int L,
 			int N,
 			int M,
 			int maxC,
@@ -85,22 +98,26 @@ public class FileNameUtil {
 			int C,
 			String useMStr,
 			double bucketSize) {
-		String histogramFile = dataGenerationOutputDir 
-				+ "synthetic_data_L" + L 
+		String histogramFile = dataGenerationOutputDir
+				+ prefix
+				+ "_L" + L 
 				+ "_N" + N 
 				+ "_M" + M 
 				+ "_maxC" + maxC 
 				+ "_ze" + df.format(ze) 
 				+ "_C" + C
-				+ "_entropy"
-				+ "_DP_SS_epsLn10_delta1e-7_minSen1e-3_" 
-				+ useMStr +"useM" 
+				+ "_DP_SS" 
+				+ "_eps" + Constants.DP_EPSILON_STR 
+				+ "_Delta"+ Constants.DP_DELTA_STR 
+				+ "_minSen" + Constants.DP_MIN_SENSITIVITY_STR
+				+ "_" + useMStr +"useM"
 				+"_histogram_bucketSize" + df.format(bucketSize) +".csv";
 		
 		return histogramFile;
 	}
 	
-	public static String getHistogramErrorFileName(int L,
+	public static String getHistogramErrorFileName(String prefix,
+			int L,
 			int N,
 			int M,
 			int maxC,
@@ -110,23 +127,28 @@ public class FileNameUtil {
 			int C,
 			String useMStr,
 			double bucketSize) {
-		String histogramFile = dataGenerationOutputDir 
-				+ "synthetic_data_L" + L 
+		String histogramFile = dataGenerationOutputDir
+				+ prefix
+				+ "_L" + L 
 				+ "_N" + N 
 				+ "_M" + M 
 				+ "_maxC" + maxC 
 				+ "_ze" + df.format(ze) 
 				+ "_C" + C
 				+ "_entropy"
-				+ "_DP_SS_epsLn10_delta1e-7_minSen1e-3_" 
-				+ useMStr +"useM" 
+				+ "_DP_SS" 
+				+ "_eps" + Constants.DP_EPSILON_STR 
+				+ "_Delta"+ Constants.DP_DELTA_STR 
+				+ "_minSen" + Constants.DP_MIN_SENSITIVITY_STR
+				+ "_" + useMStr +"useM"
 				+"_histogram_bucketSize" + df.format(bucketSize) 
 				+"___errors.csv";
 		
 		return histogramFile;
 	}
 	
-	public static String getTestResultsFileName(int L,
+	public static String getTestResultsFileName(String prefix,
+			int L,
 			int N,
 			int M,
 			int maxC,
@@ -135,14 +157,18 @@ public class FileNameUtil {
 			String dataGenerationOutputDir,
 			String useMStr,
 			double bucketSize) {
-		String histogramFile = dataGenerationOutputDir 
-				+ "synthetic_data_L" + L 
+		String histogramFile = dataGenerationOutputDir
+				+ prefix
+				+ "_L" + L 
 				+ "_N" + N 
 				+ "_M" + M 
 				+ "_maxC" + maxC 
 				+ "_ze" + df.format(ze) 
-				+ "_DP_SS_epsLn10_delta1e-7_minSen1e-3_" 
-				+ useMStr +"useM" 
+				+ "_DP_SS" 
+				+ "_eps" + Constants.DP_EPSILON_STR 
+				+ "_Delta"+ Constants.DP_DELTA_STR 
+				+ "_minSen" + Constants.DP_MIN_SENSITIVITY_STR
+				+ "_" + useMStr +"useM"
 				+"_histogram_bucketSize" + df.format(bucketSize) 
 				+ "_test_results"
 				+".csv";
@@ -161,15 +187,17 @@ public class FileNameUtil {
 	 * @param dataGenerationOutputDir
 	 * @return
 	 */
-	public static String getOriginalEntropyFileName(int L,
+	public static String getOriginalEntropyFileName(String prefix,
+			int L,
 			int N,
 			int M,
 			int maxC,
 			double ze,
 			DecimalFormat df, 
 			String dataGenerationOutputDir) {
-		String histogramFile = dataGenerationOutputDir 
-				+ "synthetic_data_L" + L 
+		String histogramFile = dataGenerationOutputDir
+				+ prefix
+				+ "_L" + L 
 				+ "_N" + N 
 				+ "_M" + M 
 				+ "_maxC" + maxC 
@@ -180,7 +208,8 @@ public class FileNameUtil {
 		return histogramFile;
 	}
 	
-	public static String getOriginalHistogramFileName(int L,
+	public static String getOriginalHistogramFileName(String prefix,
+			int L,
 			int N,
 			int M,
 			int maxC,
@@ -188,8 +217,9 @@ public class FileNameUtil {
 			DecimalFormat df, 
 			String dataGenerationOutputDir,
 			double bucketSize) {
-		String histogramFile = dataGenerationOutputDir 
-				+ "synthetic_data_L" + L 
+		String histogramFile = dataGenerationOutputDir
+				+ prefix
+				+ "_L" + L 
 				+ "_N" + N 
 				+ "_M" + M 
 				+ "_maxC" + maxC 
@@ -200,4 +230,5 @@ public class FileNameUtil {
 		
 		return histogramFile;
 	}
+	
 }
