@@ -4,6 +4,7 @@ import java.io.PrintWriter;
 import java.text.DecimalFormat;
 
 import com.duykien.usc.GIS.DP.DifferentialPrivacyNoisePerturbator;
+import com.duykien.usc.GIS.DP.DifferentialPrivacyNoisePerturbator.NoisePertubationMethod;
 import com.duykien.usc.GIS.entropycalculator.LocationEntropyCalculator;
 import com.duykien.usc.GIS.measure.LocationEntropyDPMeasureHistogramEvaluator;
 import com.duykien.usc.GIS.measure.LocationEntropyDPMeasureHistogramGenerator;
@@ -11,8 +12,6 @@ import com.duykien.usc.GIS.measure.MeasurementResults;
 
 public class DPLocationEntropy {
 
-	
-	
 	public static MeasurementResults runDPLocationEntropy(String prefix,
 			int L,
 			int N,
@@ -28,6 +27,8 @@ public class DPLocationEntropy {
 			String useMStr,
 			double bucketSize,
 			int C,
+			NoisePertubationMethod noisePertubationMethod,
+			String noisePerturbationMethodStr,
 			String uncutHistogramFile) {
 		//calculate location entropy for fixed C
 		System.out.println("C = " + C + " Started");
@@ -40,19 +41,19 @@ public class DPLocationEntropy {
 			
 		//Differential privacy 
 		
-		String sensitivityInputFile = FileNameUtil.getSensitivityInputFile(dataGenerationOutputDir, C);
+		String sensitivityInputFile = FileNameUtil.getSmoothSensitivityInputFile(dataGenerationOutputDir, C);
 		
-		String dpOutputFile = FileNameUtil.getDPOutputFile(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C, useMStr);
-		DifferentialPrivacyNoisePerturbator.perturbUnderDP(locationEntropyOutputFile, sensitivityInputFile, N, M, C, eps, delta, minSensitivity, useM, dpOutputFile);
+		String dpOutputFile = FileNameUtil.getDPOutputFile(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C, useMStr, noisePerturbationMethodStr);
+		DifferentialPrivacyNoisePerturbator.perturbUnderDP(locationEntropyOutputFile, sensitivityInputFile, N, M, C, eps, delta, minSensitivity, useM, noisePertubationMethod, dpOutputFile);
 		System.out.println("DifferentialPrivacyNoisePerturbator Finished");
 		
 		
-		String histogramFile = FileNameUtil.getHistogramFileName(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C, useMStr, bucketSize);
+		String histogramFile = FileNameUtil.getHistogramFileName(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C, useMStr, bucketSize, noisePerturbationMethodStr);
 		LocationEntropyDPMeasureHistogramGenerator.generateHistogram(dpOutputFile, N, bucketSize, df, histogramFile);
 		
 		System.out.println("LocationEntropyDPMeasureHistogramGenerator Finished");
 		
-		String histogramErrorFile = FileNameUtil.getHistogramErrorFileName(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C, useMStr, bucketSize);
+		String histogramErrorFile = FileNameUtil.getHistogramErrorFileName(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C, useMStr, bucketSize, noisePerturbationMethodStr);
 		
 		MeasurementResults results = LocationEntropyDPMeasureHistogramEvaluator.evaluateHistogram(uncutHistogramFile, histogramFile, histogramErrorFile);
 
@@ -78,13 +79,15 @@ public class DPLocationEntropy {
 			double bucketSize,
 			String uncutHistogramFile,
 			int startC,
-			int endC) {
-		String testResultFile = FileNameUtil.getTestResultsFileName(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, useMStr, bucketSize);
+			int endC,
+			NoisePertubationMethod noisePertubationMethod,
+			String noisePerturbationMethodStr) {
+		String testResultFile = FileNameUtil.getTestResultsFileName(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, useMStr, bucketSize, noisePerturbationMethodStr);
 		
 		try {
 			PrintWriter writer = new PrintWriter(testResultFile);
 			for (int C = startC; C < endC; C++) {
-				MeasurementResults results = runDPLocationEntropy(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, eps, delta, minSensitivity, useM, useMStr, bucketSize, C, uncutHistogramFile);
+				MeasurementResults results = runDPLocationEntropy(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, eps, delta, minSensitivity, useM, useMStr, bucketSize, C, noisePertubationMethod, noisePerturbationMethodStr, uncutHistogramFile);
 				writer.println(C 
 						+ "," + results.klDivergenceNoisyVsCut + "," + results.ksTestValueNoisyVsCut
 						+ "," + results.klDivergenceNoisyVsUncut + "," + results.ksTestValueNoisyVsUncut
@@ -130,8 +133,10 @@ public class DPLocationEntropy {
 		
 		int startC = Constants.START_C;
 		int endC = Constants.END_C;
+		NoisePertubationMethod noisePertubationMethod = Constants.DP_NOISE_PERTURBATION_METHOD;
+		String noisePerturbationMethodStr = Constants.DP_NOISE_PERTURBATION_METHOD_STR; 
 		String uncutHistogramFile = FileNameUtil.getOriginalHistogramFileName(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, bucketSize);
-		runTestForAllC(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, eps, delta, minSensitivity, useM, useMStr, bucketSize, uncutHistogramFile, startC, endC);
+		runTestForAllC(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, eps, delta, minSensitivity, useM, useMStr, bucketSize, uncutHistogramFile, startC, endC, noisePertubationMethod, noisePerturbationMethodStr);
 	}
 
 }

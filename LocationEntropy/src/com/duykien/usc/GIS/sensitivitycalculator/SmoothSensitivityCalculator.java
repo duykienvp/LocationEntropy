@@ -60,7 +60,7 @@ public class SmoothSensitivityCalculator {
 	String dataGenerationOutputDir) {
 		try {
 			
-			String outputFile = FileNameUtil.getSensitivityInputFile(dataGenerationOutputDir, c);
+			String outputFile = FileNameUtil.getSmoothSensitivityInputFile(dataGenerationOutputDir, c);
 			PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(outputFile)));
 			for (int n = 1; n < N; n++) {
 				double maxSensitivityN = calSmoothSensitivityUsing2ndMethod(c, n, eps, delta);

@@ -1,4 +1,4 @@
-package com.duykien.usc.GIS.gowalla.datapreparator;
+package com.duykien.usc.GIS.gowalla;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -8,9 +8,9 @@ import java.util.Map;
 import com.duykien.usc.GIS.Constants;
 import com.duykien.usc.GIS.DPLocationEntropy;
 import com.duykien.usc.GIS.FileNameUtil;
+import com.duykien.usc.GIS.DP.DifferentialPrivacyNoisePerturbator.NoisePertubationMethod;
 import com.duykien.usc.GIS.datagenerator.VisitingDatasetGenerator;
 import com.duykien.usc.GIS.entropycalculator.LocationEntropyCalculator;
-import com.duykien.usc.GIS.gowalla.GowallaContants;
 import com.duykien.usc.GIS.measure.LocationEntropyDPMeasureHistogramGenerator;
 import com.duykien.usc.locationentropy.grid.GridUtility;
 import com.duykien.usc.locationentropy.grid.GridUtilityFactory;
@@ -18,7 +18,7 @@ import com.duykien.usc.locationentropy.grid.GridUtilityFactory.Area;
 import com.duykien.usc.locationentropy.locationdata.Checkin;
 import com.duykien.usc.locationentropy.locationdata.LocationDataIO;
 
-public class GowallaDataPreparator {
+public class GowallaDPLocationEntropy {
 	
 	public static void prepare(String gowallaInputFile, 
 			GridUtility gridUtility,
@@ -98,6 +98,8 @@ public class GowallaDataPreparator {
 		*/		
 		int startC = Constants.START_C;
 		int endC = Constants.END_C;
-		DPLocationEntropy.runTestForAllC(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, eps, delta, minSensitivity, useM, useMStr, bucketSize, uncutHistogramFile, startC, endC);
+		NoisePertubationMethod noisePertubationMethod = Constants.DP_NOISE_PERTURBATION_METHOD;
+		String noisePerturbationMethodStr = Constants.DP_NOISE_PERTURBATION_METHOD_STR; 
+		DPLocationEntropy.runTestForAllC(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, eps, delta, minSensitivity, useM, useMStr, bucketSize, uncutHistogramFile, startC, endC, noisePertubationMethod, noisePerturbationMethodStr);
 	}
 }

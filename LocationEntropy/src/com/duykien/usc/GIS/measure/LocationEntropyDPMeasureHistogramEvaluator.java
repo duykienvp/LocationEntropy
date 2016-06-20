@@ -117,10 +117,12 @@ public class LocationEntropyDPMeasureHistogramEvaluator {
 		String useMStr = useM ? "" : "NOT";
 		
 		double bucketSize = Constants.BUCKET_SIZE;
-		String histogramFile = FileNameUtil.getHistogramFileName(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C,
-				useMStr, bucketSize);
+		String noisePerturbationMethodStr = Constants.DP_NOISE_PERTURBATION_METHOD_STR; 
 		
-		String histogramErrorFile = FileNameUtil.getHistogramErrorFileName(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C, useMStr, bucketSize);
+		String histogramFile = FileNameUtil.getHistogramFileName(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C,
+				useMStr, bucketSize, noisePerturbationMethodStr);
+		
+		String histogramErrorFile = FileNameUtil.getHistogramErrorFileName(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C, useMStr, bucketSize, noisePerturbationMethodStr);
 		
 		String uncutHistogramFile = FileNameUtil.getOriginalHistogramFileName(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, bucketSize);
 		

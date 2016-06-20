@@ -46,7 +46,7 @@ public class FileNameUtil {
 		return locationEntropyOutputFile;
 	}
 	
-	public static String getSensitivityInputFile(String dataGenerationOutputDir,
+	public static String getSmoothSensitivityInputFile(String dataGenerationOutputDir,
 			int C) {
 		String sensitivityInputFile = dataGenerationOutputDir 
 				+ "varyN_fixedC" + C 
@@ -67,7 +67,8 @@ public class FileNameUtil {
 			DecimalFormat df, 
 			String dataGenerationOutputDir,
 			int C,
-			String useMStr) {
+			String useMStr,
+			String noisePerturbationMethodStr) {
 		String dpOutputFile = dataGenerationOutputDir
 				+ prefix
 				+ "_L" + L 
@@ -77,7 +78,7 @@ public class FileNameUtil {
 				+ "_ze" + df.format(ze) 
 				+ "_C" + C
 				+ "_entropy"
-				+ "_DP_SS" 
+				+ "_DP_" + noisePerturbationMethodStr 
 				+ "_eps" + Constants.DP_EPSILON_STR 
 				+ "_Delta"+ Constants.DP_DELTA_STR 
 				+ "_minSen" + Constants.DP_MIN_SENSITIVITY_STR
@@ -97,7 +98,8 @@ public class FileNameUtil {
 			String dataGenerationOutputDir,
 			int C,
 			String useMStr,
-			double bucketSize) {
+			double bucketSize,
+			String noisePerturbationMethodStr) {
 		String histogramFile = dataGenerationOutputDir
 				+ prefix
 				+ "_L" + L 
@@ -106,7 +108,7 @@ public class FileNameUtil {
 				+ "_maxC" + maxC 
 				+ "_ze" + df.format(ze) 
 				+ "_C" + C
-				+ "_DP_SS" 
+				+ "_DP_" + noisePerturbationMethodStr 
 				+ "_eps" + Constants.DP_EPSILON_STR 
 				+ "_Delta"+ Constants.DP_DELTA_STR 
 				+ "_minSen" + Constants.DP_MIN_SENSITIVITY_STR
@@ -126,7 +128,8 @@ public class FileNameUtil {
 			String dataGenerationOutputDir,
 			int C,
 			String useMStr,
-			double bucketSize) {
+			double bucketSize,
+			String noisePerturbationMethodStr) {
 		String histogramFile = dataGenerationOutputDir
 				+ prefix
 				+ "_L" + L 
@@ -136,7 +139,7 @@ public class FileNameUtil {
 				+ "_ze" + df.format(ze) 
 				+ "_C" + C
 				+ "_entropy"
-				+ "_DP_SS" 
+				+ "_DP_" + noisePerturbationMethodStr 
 				+ "_eps" + Constants.DP_EPSILON_STR 
 				+ "_Delta"+ Constants.DP_DELTA_STR 
 				+ "_minSen" + Constants.DP_MIN_SENSITIVITY_STR
@@ -156,7 +159,8 @@ public class FileNameUtil {
 			DecimalFormat df, 
 			String dataGenerationOutputDir,
 			String useMStr,
-			double bucketSize) {
+			double bucketSize,
+			String noisePerturbationMethodStr) {
 		String histogramFile = dataGenerationOutputDir
 				+ prefix
 				+ "_L" + L 
@@ -164,7 +168,7 @@ public class FileNameUtil {
 				+ "_M" + M 
 				+ "_maxC" + maxC 
 				+ "_ze" + df.format(ze) 
-				+ "_DP_SS" 
+				+ "_DP_" + noisePerturbationMethodStr 
 				+ "_eps" + Constants.DP_EPSILON_STR 
 				+ "_Delta"+ Constants.DP_DELTA_STR 
 				+ "_minSen" + Constants.DP_MIN_SENSITIVITY_STR

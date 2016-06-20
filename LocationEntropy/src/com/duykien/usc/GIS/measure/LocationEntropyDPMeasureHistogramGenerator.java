@@ -125,10 +125,12 @@ public class LocationEntropyDPMeasureHistogramGenerator {
 		boolean useM = false;
 		String useMStr = useM ? "" : "NOT";
 		
-		String dpOutputFile = FileNameUtil.getDPOutputFile(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C, useMStr);
+		String noisePerturbationMethodStr = Constants.DP_NOISE_PERTURBATION_METHOD_STR; 
+		
+		String dpOutputFile = FileNameUtil.getDPOutputFile(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C, useMStr, noisePerturbationMethodStr);
 		
 		double bucketSize = Constants.BUCKET_SIZE;
-		String histogramFile = FileNameUtil.getHistogramFileName(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C, useMStr, bucketSize);
+		String histogramFile = FileNameUtil.getHistogramFileName(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C, useMStr, bucketSize, noisePerturbationMethodStr);
 		generateHistogram(dpOutputFile, N, bucketSize, df, histogramFile);
 		
 		System.out.println("Finished");
