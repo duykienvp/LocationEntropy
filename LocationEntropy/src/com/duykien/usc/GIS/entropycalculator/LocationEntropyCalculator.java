@@ -37,25 +37,29 @@ public class LocationEntropyCalculator {
 			
 			int maxL = Collections.max(visitMap.keySet());
 			
-			for (Integer locationId = 0; locationId < maxL + 1; locationId++) {
-				if (visitMap.containsKey(locationId) == false)
-					continue;
-				ArrayList<Integer> counts = visitMap.get(locationId);
-				ArrayList<Double> limitedCounts = new ArrayList<>();
-				for (int i = 0; i < counts.size(); i++) {
-					Double count = (double) Math.min(counts.get(i), C);
-					limitedCounts.add(count);
-				}
-				
-				double entropy = calEntropy(limitedCounts);
-				
-				//write data: locationId,num_users,entropy
-				writer.println(locationId + "," + counts.size() + "," + entropy);
-				
+			for (Integer locationId = 1; locationId < maxL + 1; locationId++) {
 				LocationEntropyInfo info = new LocationEntropyInfo();
 				info.setLocationId(locationId);
-				info.setNumUser(counts.size());
-				info.setEntropy(entropy);
+				if (visitMap.containsKey(locationId)) {
+					ArrayList<Integer> counts = visitMap.get(locationId);
+					ArrayList<Double> limitedCounts = new ArrayList<>();
+					for (int i = 0; i < counts.size(); i++) {
+						Double count = (double) Math.min(counts.get(i), C);
+						limitedCounts.add(count);
+					}
+					
+					double entropy = calEntropy(limitedCounts);
+					
+					//write data: locationId,num_users,entropy
+					writer.println(locationId + "," + counts.size() + "," + entropy);
+									
+					info.setNumUser(counts.size());
+					info.setEntropy(entropy);
+				} else {
+					info.setNumUser(0);
+					info.setEntropy(0);
+				}
+				
 				infos.add(info);
 			}
 			

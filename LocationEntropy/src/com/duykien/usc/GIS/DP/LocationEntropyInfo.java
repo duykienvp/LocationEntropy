@@ -7,6 +7,28 @@ public class LocationEntropyInfo {
 	private double privateEntropy = -1;
 	private double noise = -1;
 
+	public LocationEntropyInfo() {
+		super();
+	}
+
+	public LocationEntropyInfo(int locationId, int numUser, double entropy, double privateEntropy, double noise) {
+		super();
+		this.locationId = locationId;
+		this.numUser = numUser;
+		this.entropy = entropy;
+		this.privateEntropy = privateEntropy;
+		this.noise = noise;
+	}
+
+	public LocationEntropyInfo(LocationEntropyInfo rh) {
+		super();
+		this.locationId = rh.getLocationId();
+		this.numUser = rh.getNumUser();
+		this.entropy = rh.getEntropy();
+		this.privateEntropy = rh.getPrivateEntropy();
+		this.noise = rh.getNoise();
+	}
+	
 	public int getLocationId() {
 		return locationId;
 	}

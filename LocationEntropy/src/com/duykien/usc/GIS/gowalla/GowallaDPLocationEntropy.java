@@ -38,8 +38,19 @@ public class GowallaDPLocationEntropy {
 		ArrayList<Checkin> checkins = LocationDataIO.read(readParams);
 		
 		Map<Integer, Map<Integer, Integer>> locationCheckins = convertToCheckinsToLocations(checkins);
+		//convert
+		Map<Integer, ArrayList<Integer>> convertedMap = new HashMap<>();
+		for (Integer l : locationCheckins.keySet()) {
+			ArrayList<Integer> userCount = new ArrayList<>();
+			for (Map.Entry<Integer, Integer> entry : locationCheckins.get(l).entrySet()) {
+				userCount.add(entry.getKey());
+				userCount.add(entry.getValue());
+			}
+			
+			convertedMap.put(l, userCount);
+		}
 		
-		VisitingDatasetIO.writeData(locationCheckins, numLoc, outputFile);
+		VisitingDatasetIO.writeData(convertedMap, outputFile);
 	}
 	
 	/**
@@ -101,6 +112,6 @@ public class GowallaDPLocationEntropy {
 		int endC = Constants.END_C;
 		NoisePertubationMethod noisePertubationMethod = Constants.DP_NOISE_PERTURBATION_METHOD;
 		String noisePerturbationMethodStr = Constants.DP_NOISE_PERTURBATION_METHOD_STR; 
-		DPLocationEntropy.runTestForAllC(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, eps, delta, minSensitivity, useM, useMStr, bucketSize, uncutHistogramFile, startC, endC, noisePertubationMethod, noisePerturbationMethodStr);
+//		DPLocationEntropy.runTestForAllC(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, eps, delta, minSensitivity, useM, useMStr, bucketSize, uncutHistogramFile, startC, endC, noisePertubationMethod, noisePerturbationMethodStr);
 	}
 }

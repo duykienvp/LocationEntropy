@@ -9,6 +9,7 @@ import java.util.StringTokenizer;
 
 import com.duykien.usc.GIS.Constants;
 import com.duykien.usc.GIS.FileNameUtil;
+import com.duykien.usc.GIS.DP.DPUtil;
 import com.duykien.usc.GIS.DP.LocationEntropyInfo;
 
 public class LocationEntropyDPMeasureHistogramGenerator {
@@ -192,13 +193,14 @@ public class LocationEntropyDPMeasureHistogramGenerator {
 		//Differential privacy 
 		boolean useM = false;
 		String useMStr = useM ? "" : "NOT";
+		String epsStr = DPUtil.toEpsilonString(Constants.DP_EPSILON);
 		
 		String noisePerturbationMethodStr = Constants.DP_NOISE_PERTURBATION_METHOD_STR; 
 		
-		String dpOutputFile = FileNameUtil.getDPOutputFile(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C, useMStr, noisePerturbationMethodStr);
+		String dpOutputFile = FileNameUtil.getDPOutputFile(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C, epsStr, useMStr, noisePerturbationMethodStr);
 		
 		double bucketSize = Constants.BUCKET_SIZE;
-		String histogramFile = FileNameUtil.getHistogramFileName(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C, useMStr, bucketSize, noisePerturbationMethodStr);
+		String histogramFile = FileNameUtil.getHistogramFileName(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C, epsStr, useMStr, bucketSize, noisePerturbationMethodStr);
 		generateHistogramDisabled(dpOutputFile, N, bucketSize, df, histogramFile);
 		
 		System.out.println("Finished");

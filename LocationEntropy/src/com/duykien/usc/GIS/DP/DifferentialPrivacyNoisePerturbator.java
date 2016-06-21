@@ -283,12 +283,13 @@ public class DifferentialPrivacyNoisePerturbator {
 		double minSensitivity = Constants.MIN_SENSITIVITY;
 		boolean useM = Constants.USE_M;
 		String useMStr = useM ? "" : "NOT";
+		String epsStr = DPUtil.toEpsilonString(eps);
 		
-		String sensitivityInputFile = FileNameUtil.getSmoothSensitivityInputFile(dataGenerationOutputDir, C);
+		String sensitivityInputFile = FileNameUtil.getSmoothSensitivityInputFile(dataGenerationOutputDir, C, epsStr);
 		
 		NoisePertubationMethod noisePertubationMethod = NoisePertubationMethod.SMOOTH_SENSITIVITY_2ND_METHOD;
 		String noisePerturbationMethodStr = Constants.DP_NOISE_PERTURBATION_METHOD_STR; 
-		String dpOutputFile = FileNameUtil.getDPOutputFile(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C, useMStr, noisePerturbationMethodStr);
+		String dpOutputFile = FileNameUtil.getDPOutputFile(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C, epsStr, useMStr, noisePerturbationMethodStr);
 		perturbUnderDPDisabled(locationEntropyOutputFile, sensitivityInputFile, N, M, C, eps, delta, minSensitivity, useM, noisePertubationMethod,  dpOutputFile);
 		System.out.println("Finished");
 	}

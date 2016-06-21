@@ -9,6 +9,7 @@ import java.util.StringTokenizer;
 
 import com.duykien.usc.GIS.Constants;
 import com.duykien.usc.GIS.FileNameUtil;
+import com.duykien.usc.GIS.DP.DPUtil;
 
 public class LocationEntropyDPMeasureHistogramEvaluator {
 
@@ -94,14 +95,14 @@ public class LocationEntropyDPMeasureHistogramEvaluator {
 			String histogramErrorFile) {
 		MeasurementResults results = new MeasurementResults();
 		
-		results.klDivergenceNoisyVsCut = KLDivergenceCalculator.klDivergence(histogramInfo.getNoisyCount(), histogramInfo.getOrgCount());
-		results.ksTestValueNoisyVsCut = KSTestCalculator.calKolmogorovSmirnovTest(histogramInfo.getNoisyCDF(), histogramInfo.getOrigCDF());
+		results.klDivergencePrivateVsLimited = KLDivergenceCalculator.klDivergence(histogramInfo.getNoisyCount(), histogramInfo.getOrgCount());
+		results.ksTestValuePrivateVsLimited = KSTestCalculator.calKolmogorovSmirnovTest(histogramInfo.getNoisyCDF(), histogramInfo.getOrigCDF());
 		
-		results.klDivergenceNoisyVsUncut = KLDivergenceCalculator.klDivergence(histogramInfo.getNoisyCount(), uncutHistogramInfo.getOrgCount());
-		results.ksTestValueNoisyVsUncut = KSTestCalculator.calKolmogorovSmirnovTest(histogramInfo.getNoisyCDF(), uncutHistogramInfo.getOrigCDF());
+		results.klDivergencePrivateVsActual = KLDivergenceCalculator.klDivergence(histogramInfo.getNoisyCount(), uncutHistogramInfo.getOrgCount());
+		results.ksTestValuePrivateVsActual = KSTestCalculator.calKolmogorovSmirnovTest(histogramInfo.getNoisyCDF(), uncutHistogramInfo.getOrigCDF());
 		
-		results.klDivergenceCutVsUncut = KLDivergenceCalculator.klDivergence(histogramInfo.getOrgCount(), uncutHistogramInfo.getOrgCount());
-		results.ksTestValueCutVsUncut = KSTestCalculator.calKolmogorovSmirnovTest(histogramInfo.getOrigCDF(), uncutHistogramInfo.getOrigCDF());
+		results.klDivergenceLimitedVsActual = KLDivergenceCalculator.klDivergence(histogramInfo.getOrgCount(), uncutHistogramInfo.getOrgCount());
+		results.ksTestValueLimitedVsActual = KSTestCalculator.calKolmogorovSmirnovTest(histogramInfo.getOrigCDF(), uncutHistogramInfo.getOrigCDF());
 		
 		try {
 			PrintWriter writer = new PrintWriter(histogramErrorFile);
@@ -141,14 +142,14 @@ public class LocationEntropyDPMeasureHistogramEvaluator {
 		
 		MeasurementResults results = new MeasurementResults();
 		
-		results.klDivergenceNoisyVsCut = KLDivergenceCalculator.klDivergence(noisyCount, orgCount);
-		results.ksTestValueNoisyVsCut = KSTestCalculator.calKolmogorovSmirnovTest(noisyCDF, origCDF);
+		results.klDivergencePrivateVsLimited = KLDivergenceCalculator.klDivergence(noisyCount, orgCount);
+		results.ksTestValuePrivateVsLimited = KSTestCalculator.calKolmogorovSmirnovTest(noisyCDF, origCDF);
 		
-		results.klDivergenceNoisyVsUncut = KLDivergenceCalculator.klDivergence(noisyCount, uncutCount);
-		results.ksTestValueNoisyVsUncut = KSTestCalculator.calKolmogorovSmirnovTest(noisyCDF, uncutCDF);
+		results.klDivergencePrivateVsActual = KLDivergenceCalculator.klDivergence(noisyCount, uncutCount);
+		results.ksTestValuePrivateVsActual = KSTestCalculator.calKolmogorovSmirnovTest(noisyCDF, uncutCDF);
 		
-		results.klDivergenceCutVsUncut = KLDivergenceCalculator.klDivergence(orgCount, uncutCount);
-		results.ksTestValueCutVsUncut = KSTestCalculator.calKolmogorovSmirnovTest(origCDF, uncutCDF);
+		results.klDivergenceLimitedVsActual = KLDivergenceCalculator.klDivergence(orgCount, uncutCount);
+		results.ksTestValueLimitedVsActual = KSTestCalculator.calKolmogorovSmirnovTest(origCDF, uncutCDF);
 		
 		try {
 			PrintWriter writer = new PrintWriter(histogramErrorFile);
@@ -181,13 +182,16 @@ public class LocationEntropyDPMeasureHistogramEvaluator {
 		boolean useM = false;
 		String useMStr = useM ? "" : "NOT";
 		
+		double eps = Constants.DP_EPSILON;
+		String epsStr = DPUtil.toEpsilonString(eps);
 		double bucketSize = Constants.BUCKET_SIZE;
 		String noisePerturbationMethodStr = Constants.DP_NOISE_PERTURBATION_METHOD_STR; 
 		
 		String histogramFile = FileNameUtil.getHistogramFileName(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C,
+				epsStr,
 				useMStr, bucketSize, noisePerturbationMethodStr);
 		
-		String histogramErrorFile = FileNameUtil.getHistogramErrorFileName(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C, useMStr, bucketSize, noisePerturbationMethodStr);
+		String histogramErrorFile = FileNameUtil.getHistogramErrorFileName(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C, epsStr, useMStr, bucketSize, noisePerturbationMethodStr);
 		
 		String uncutHistogramFile = FileNameUtil.getOriginalHistogramFileName(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, bucketSize);
 		

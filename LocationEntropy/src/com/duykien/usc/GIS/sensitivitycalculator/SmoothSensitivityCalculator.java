@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 
 import com.duykien.usc.GIS.Constants;
 import com.duykien.usc.GIS.FileNameUtil;
+import com.duykien.usc.GIS.DP.DPUtil;
 
 /**
  * Calculate smooth sensitivity of location entropy when a user is added or
@@ -63,8 +64,8 @@ public class SmoothSensitivityCalculator {
 	public static void calSmoothSensitivity2ndMethod(double eps, double delta, int c, double minSensitivity, double N,
 			String dataGenerationOutputDir) {
 		try {
-
-			String outputFile = FileNameUtil.getSmoothSensitivityInputFile(dataGenerationOutputDir, c);
+			String epsStr = DPUtil.toEpsilonString(eps);
+			String outputFile = FileNameUtil.getSmoothSensitivityInputFile(dataGenerationOutputDir, c, epsStr);
 			PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(outputFile)));
 			for (int n = 1; n < N; n++) {
 				double maxSensitivityN = calSmoothSensitivityUsing2ndMethod(c, n, eps, delta);
@@ -94,6 +95,8 @@ public class SmoothSensitivityCalculator {
 
 		int startC = Constants.START_C;
 		int endC = Constants.END_C;
+		startC = 5;
+		endC = startC + 1;
 		for (int c = startC; c < endC; c++)
 			calSmoothSensitivity2ndMethod(eps, delta, c, minSensitivity, N, dataGenerationOutputDir);
 
