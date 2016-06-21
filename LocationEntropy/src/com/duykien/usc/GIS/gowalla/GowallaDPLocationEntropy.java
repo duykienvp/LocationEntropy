@@ -11,6 +11,7 @@ import com.duykien.usc.GIS.FileNameUtil;
 import com.duykien.usc.GIS.DP.DifferentialPrivacyNoisePerturbator.NoisePertubationMethod;
 import com.duykien.usc.GIS.datagenerator.VisitingDatasetGenerator;
 import com.duykien.usc.GIS.entropycalculator.LocationEntropyCalculator;
+import com.duykien.usc.GIS.io.VisitingDatasetIO;
 import com.duykien.usc.GIS.measure.LocationEntropyDPMeasureHistogramGenerator;
 import com.duykien.usc.locationentropy.grid.GridUtility;
 import com.duykien.usc.locationentropy.grid.GridUtilityFactory;
@@ -38,7 +39,7 @@ public class GowallaDPLocationEntropy {
 		
 		Map<Integer, Map<Integer, Integer>> locationCheckins = convertToCheckinsToLocations(checkins);
 		
-		VisitingDatasetGenerator.writeData(locationCheckins, numLoc, outputFile);
+		VisitingDatasetIO.writeData(locationCheckins, numLoc, outputFile);
 	}
 	
 	/**

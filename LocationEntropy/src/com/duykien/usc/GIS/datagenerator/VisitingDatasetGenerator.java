@@ -1,10 +1,6 @@
 package com.duykien.usc.GIS.datagenerator;
 
-import java.io.FileWriter;
-import java.io.PrintWriter;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -14,6 +10,7 @@ import org.apache.commons.math3.distribution.ZipfDistribution;
 
 import com.duykien.usc.GIS.Constants;
 import com.duykien.usc.GIS.FileNameUtil;
+import com.duykien.usc.GIS.io.VisitingDatasetIO;
 
 public class VisitingDatasetGenerator {
 	
@@ -73,44 +70,7 @@ public class VisitingDatasetGenerator {
 			}
 		}
 		
-		writeData(dataset, L, outputFile);
-	}
-	
-	/**
-	 * Write generated data.
-	 * for each line: locationId,userid1,visits1,userid3,visits2,.....
-	 * @param dataset Map: location => (map: userid -> visits)
-	 * @param L number of locations
-	 * @param outputFile output file
-	 */
-	public static void writeData(Map<Integer, Map<Integer, Integer>> dataset, int L, String outputFile) {
-		try {
-			PrintWriter writer = new PrintWriter(new FileWriter(outputFile));
-			
-			for (int l = 1; l <= L; l++) {
-				if (dataset.containsKey(l) == false)
-					continue;
-				
-				Map<Integer, Integer> visitMap = new HashMap<>(dataset.get(l));
-				
-				if (visitMap != null) {
-					ArrayList<Integer> users = new ArrayList<>(visitMap.keySet());
-					Collections.sort(users);
-					
-					writer.print("" + l);
-					for (int i = 0; i < users.size(); i++) {
-						int userId = users.get(i);
-						writer.print("," + userId + "," + visitMap.get(userId));
-					}
-					writer.println();
-				}
-				
-			}
-			
-			writer.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		VisitingDatasetIO.writeData(dataset, L, outputFile);
 	}
 	
 	/**

@@ -5,14 +5,71 @@ import java.io.FileReader;
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import com.duykien.usc.GIS.Constants;
 import com.duykien.usc.GIS.FileNameUtil;
+import com.duykien.usc.GIS.DP.LocationEntropyInfo;
+import com.duykien.usc.GIS.io.VisitingDatasetIO;
 
 public class LocationEntropyCalculator {
 	
 	/**
+	 * Calculate location entropy when limiting maximum number of visits of a user to a location by C
+	 * 
+	 * Input format:
+	 * Map of : Location id -> (visitCount1, visitCount1, ...)
+	 * 
+	 * Output file format:
+	 * for each line: locationId,num_users,entropy
+	 * 
+	 * @param visitMap 
+	 * @param C maximum number of visits of a user to a location
+	 * @param outputFile
+	 * @return list of location entropy infos
+	 */
+	public static ArrayList<LocationEntropyInfo> calLocationEntropy(Map<Integer, ArrayList<Integer>> visitMap, int C, String outputFile) {
+		try {
+			ArrayList<LocationEntropyInfo> infos = new ArrayList<>();
+			PrintWriter writer = new PrintWriter(outputFile);
+			
+			int maxL = Collections.max(visitMap.keySet());
+			
+			for (Integer locationId = 0; locationId < maxL + 1; locationId++) {
+				if (visitMap.containsKey(locationId) == false)
+					continue;
+				ArrayList<Integer> counts = visitMap.get(locationId);
+				ArrayList<Double> limitedCounts = new ArrayList<>();
+				for (int i = 0; i < counts.size(); i++) {
+					Double count = (double) Math.min(counts.get(i), C);
+					limitedCounts.add(count);
+				}
+				
+				double entropy = calEntropy(limitedCounts);
+				
+				//write data: locationId,num_users,entropy
+				writer.println(locationId + "," + counts.size() + "," + entropy);
+				
+				LocationEntropyInfo info = new LocationEntropyInfo();
+				info.setLocationId(locationId);
+				info.setNumUser(counts.size());
+				info.setEntropy(entropy);
+				infos.add(info);
+			}
+			
+			writer.close();
+			
+			return infos;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**
+	 * NOTE: not used now
 	 * Calculate location entropy when limiting maximum number of visits of a user to a location by C
 	 * 
 	 * Input file format:
@@ -25,7 +82,7 @@ public class LocationEntropyCalculator {
 	 * @param C maximum number of visits of a user to a location
 	 * @param outputFile
 	 */
-	public static void calLocationEntropy(String inputFile, int C, String outputFile) {
+	public static void calLocationEntropyDisabled(String inputFile, int C, String outputFile) {
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(inputFile));
 			PrintWriter writer = new PrintWriter(outputFile);
@@ -110,7 +167,9 @@ public class LocationEntropyCalculator {
 		int C = Constants.C;
 		String locationEntropyOutputFile = FileNameUtil.getLocationEntropyOutputFile(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C);
 		
-		calLocationEntropy(dataGenerationOutputFile, C, locationEntropyOutputFile);
+		Map<Integer, ArrayList<Integer>> visitMap = VisitingDatasetIO.readData(dataGenerationOutputFile);
+		calLocationEntropy(visitMap, C, locationEntropyOutputFile);
+//		calLocationEntropy(dataGenerationOutputFile, C, locationEntropyOutputFile);
 		System.out.println("Finished");
 	}
 }

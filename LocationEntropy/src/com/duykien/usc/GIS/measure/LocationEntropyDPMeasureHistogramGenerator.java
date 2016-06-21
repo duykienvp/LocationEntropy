@@ -4,10 +4,12 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 import com.duykien.usc.GIS.Constants;
 import com.duykien.usc.GIS.FileNameUtil;
+import com.duykien.usc.GIS.DP.LocationEntropyInfo;
 
 public class LocationEntropyDPMeasureHistogramGenerator {
 	
@@ -22,7 +24,7 @@ public class LocationEntropyDPMeasureHistogramGenerator {
 			return 0;
 		return (int)Math.floor(value / bucketSize);
 	}
-
+	
 	/**
 	 * Histogram generator:
 	 * 	- divide output space [0, logN] to buckets of size bucketSize
@@ -31,7 +33,48 @@ public class LocationEntropyDPMeasureHistogramGenerator {
 	 *  - Each line: bucket_value,orginal_count,noisy_count,cumulative_original_count,cumulative_noisy_count
 	 * @param inputFile
 	 */
-	public static void generateHistogram(String inputFile, int N, double bucketSize, DecimalFormat df, String histogramOutputFile) {
+	public static LEHistogramInfo generateHistogram(ArrayList<LocationEntropyInfo> leInfos, int N, double bucketSize, DecimalFormat df, String histogramOutputFile) {
+		
+		try {
+			int maxBucketIndex = calBucketIndex(bucketSize, Math.log(N));
+			int[] histogramOrg = new int[maxBucketIndex + 1];
+			for (int i = 0; i < maxBucketIndex + 1; i++)
+				histogramOrg[i] = 0;
+			
+			int[] histogramNoise = new int[maxBucketIndex + 1];
+			for (int i = 0; i < maxBucketIndex + 1; i++)
+				histogramNoise[i] = 0;
+			
+			for (int i = 0; i < leInfos.size(); i++) {
+				LocationEntropyInfo leInfo = leInfos.get(i);
+				
+				int orgBucket = calBucketIndex(bucketSize, leInfo.getEntropy());
+				int noiseBuckey = calBucketIndex(bucketSize, leInfo.getPrivateEntropy()); 
+				
+				histogramOrg[orgBucket]++;
+				histogramNoise[noiseBuckey]++;
+			}		
+			
+			writeHistogram(bucketSize, df, histogramOutputFile, histogramOrg, histogramNoise);
+			
+			//Calculate CDF
+			return calHistogramInfo(bucketSize, histogramOrg, histogramNoise);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	/**
+	 * Note: not used now
+	 * Histogram generator:
+	 * 	- divide output space [0, logN] to buckets of size bucketSize
+	 *  - output number of times entropy values jumped to a particular bucket
+	 * Output format:
+	 *  - Each line: bucket_value,orginal_count,noisy_count,cumulative_original_count,cumulative_noisy_count
+	 * @param inputFile
+	 */
+	public static void generateHistogramDisabled(String inputFile, int N, double bucketSize, DecimalFormat df, String histogramOutputFile) {
 		
 		try {
 			int maxBucketIndex = calBucketIndex(bucketSize, Math.log(N));
@@ -70,7 +113,32 @@ public class LocationEntropyDPMeasureHistogramGenerator {
 			e.printStackTrace();
 		}
 	}
+
 	
+	public static LEHistogramInfo calHistogramInfo(double bucketSize, int[] histogramOrg, int[] histogramNoise) {
+		LEHistogramInfo info = new LEHistogramInfo();
+		double sumCount = 0;
+		for (int i = 0; i < histogramNoise.length; i++) 
+			sumCount += histogramNoise[i];
+		
+		double orgCDF = 0;
+		double noisyCDF = 0;
+		for (int i = 0; i < histogramNoise.length; i++) {
+			double bucketValue = i * bucketSize;
+			
+			orgCDF += (double)histogramOrg[i] / sumCount;
+			noisyCDF += (double)histogramNoise[i] / sumCount;
+			
+			info.getBucketIndices().add(bucketValue);
+			info.getOrgCount().add(histogramOrg[i]);
+			info.getNoisyCount().add(histogramNoise[i]);
+			info.getOrigCDF().add(new Double(orgCDF));
+			info.getNoisyCDF().add(new Double(noisyCDF));
+		}
+		
+		return info;
+	}
+
 	/**
 	 * Write histogram.
 	 * Format: bucket_value,orginal_count,noisy_count,original_CDF,noisy_CDF
@@ -131,7 +199,7 @@ public class LocationEntropyDPMeasureHistogramGenerator {
 		
 		double bucketSize = Constants.BUCKET_SIZE;
 		String histogramFile = FileNameUtil.getHistogramFileName(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C, useMStr, bucketSize, noisePerturbationMethodStr);
-		generateHistogram(dpOutputFile, N, bucketSize, df, histogramFile);
+		generateHistogramDisabled(dpOutputFile, N, bucketSize, df, histogramFile);
 		
 		System.out.println("Finished");
 	}

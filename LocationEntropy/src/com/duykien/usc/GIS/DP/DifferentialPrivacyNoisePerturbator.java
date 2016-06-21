@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -16,6 +17,7 @@ import com.duykien.usc.GIS.FileNameUtil;
 import com.duykien.usc.GIS.sensitivitycalculator.SensitivityCalculator;
 
 public class DifferentialPrivacyNoisePerturbator {
+	
 	public enum NoisePertubationMethod {
 		GLOBAL_LAPLACE, SMOOTH_SENSITIVITY_2ND_METHOD
 	}
@@ -77,6 +79,98 @@ public class DifferentialPrivacyNoisePerturbator {
 	
 	/**
 	 * Perturb entropy using differential privacy using Smooth Sensitivity, method 2, which creates (epsilon, delta)-DP.
+	 * Entropy input format: locationID,num_users,entropy
+	 * Sensitivity input file format: num_users,sensitivity
+	 * 
+	 * Output file:
+	 * Each line: locationID,num_users,entropy,perturbed_entropy,noise
+	 * @param leInfos location entropy infos
+	 * @param sensitivityInputFile
+	 * @param N maximum number of users
+	 * @param m
+	 * @param c
+	 * @param eps
+	 * @param delta
+	 * @param useM should we use M in adding noise
+	 * @param outputFile
+	 */
+	public static void perturbUnderDP(ArrayList<LocationEntropyInfo> leInfos, 
+			String sensitivityInputFile,
+			int N,
+			int m, 
+			int c, 
+			double eps, 
+			double delta, 
+			double minSensitivity,
+			boolean useM,
+			NoisePertubationMethod noisePertubationMethod,
+			String outputFile) {
+		try {
+			Map<Integer, Double> sensitivityMap = null;
+			if (noisePertubationMethod == NoisePertubationMethod.SMOOTH_SENSITIVITY_2ND_METHOD) {
+				sensitivityMap = readSensitivity(sensitivityInputFile);
+			}
+			BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
+			
+			double multipleLocationMagnitude = useM ? m : 1;
+			
+			if (noisePertubationMethod == NoisePertubationMethod.GLOBAL_LAPLACE)
+				prepareLaplaceDistribution(c, eps, multipleLocationMagnitude);
+				
+			
+			String line = null;
+			for (int i = 0; i < leInfos.size(); i++) {
+				LocationEntropyInfo leInfo = leInfos.get(i);
+				
+				Integer n = leInfo.getNumUser();
+				Double entropy = leInfo.getEntropy();
+				entropy = Math.max(0, entropy);
+				
+				//cal noise
+				double noise = 0;
+				if (noisePertubationMethod == NoisePertubationMethod.SMOOTH_SENSITIVITY_2ND_METHOD) {
+					//smooth sensitivity
+					//get sensitivity; if unable, use the min sensitivity 
+					Double sensitivity = sensitivityMap.get(n);
+					if (sensitivity == null) {
+						sensitivity = minSensitivity;
+					}
+					noise = calSmoothSensitivityNoise2ndMethod(sensitivity, eps, multipleLocationMagnitude);
+				} else {
+					//default: GLOBAL_LAPLACE
+					noise = calGlobalLaplaceNoise(c, eps, multipleLocationMagnitude);
+				}
+				
+				//add noise and make sure 0 <= private entropy <= log N
+				double privateEntropy = entropy + noise;
+				if (Math.log(N) < privateEntropy) {
+					privateEntropy = Math.log(N);
+					noise = privateEntropy - entropy;
+				}
+				if (privateEntropy < 0) {
+					privateEntropy = 0;
+					noise = privateEntropy - entropy;
+				}
+				
+				leInfo.setPrivateEntropy(privateEntropy);
+				leInfo.setNoise(noise);
+				
+				//write output
+				String outputLine = line + "," + privateEntropy + "," + noise;
+				writer.write(outputLine);
+				writer.newLine();
+			
+			}
+			
+			writer.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Note: not used now
+	 * Perturb entropy using differential privacy using Smooth Sensitivity, method 2, which creates (epsilon, delta)-DP.
 	 * Entropy input file format: locationID,num_users,entropy
 	 * Sensitivity input file format: num_users,sensitivity
 	 * 
@@ -92,7 +186,7 @@ public class DifferentialPrivacyNoisePerturbator {
 	 * @param useM should we use M in adding noise
 	 * @param outputFile
 	 */
-	public static void perturbUnderDP(String entropyInputFile, 
+	public static void perturbUnderDPDisabled(String entropyInputFile, 
 			String sensitivityInputFile,
 			int N,
 			int m, 
@@ -195,7 +289,7 @@ public class DifferentialPrivacyNoisePerturbator {
 		NoisePertubationMethod noisePertubationMethod = NoisePertubationMethod.SMOOTH_SENSITIVITY_2ND_METHOD;
 		String noisePerturbationMethodStr = Constants.DP_NOISE_PERTURBATION_METHOD_STR; 
 		String dpOutputFile = FileNameUtil.getDPOutputFile(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C, useMStr, noisePerturbationMethodStr);
-		perturbUnderDP(locationEntropyOutputFile, sensitivityInputFile, N, M, C, eps, delta, minSensitivity, useM, noisePertubationMethod,  dpOutputFile);
+		perturbUnderDPDisabled(locationEntropyOutputFile, sensitivityInputFile, N, M, C, eps, delta, minSensitivity, useM, noisePertubationMethod,  dpOutputFile);
 		System.out.println("Finished");
 	}
 

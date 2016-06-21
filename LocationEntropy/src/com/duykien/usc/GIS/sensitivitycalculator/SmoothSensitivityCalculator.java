@@ -8,19 +8,27 @@ import com.duykien.usc.GIS.Constants;
 import com.duykien.usc.GIS.FileNameUtil;
 
 /**
- * Calculate smooth sensitivity of location entropy when a user is added or removed
+ * Calculate smooth sensitivity of location entropy when a user is added or
+ * removed
+ * 
  * @author kiennd
  *
  */
 public class SmoothSensitivityCalculator {
 
 	/**
-	 * Calculate smooth sensitivity of location entropy when a user is added or removed 
-	 * when we use the 2nd method of calibrating noise using smooth sensitivity
-	 * @param c maximum number of visits of a user
-	 * @param n number of users 
-	 * @param eps epsilon for differential privacy
-	 * @param delta delta for differential privacy
+	 * Calculate smooth sensitivity of location entropy when a user is added or
+	 * removed when we use the 2nd method of calibrating noise using smooth
+	 * sensitivity
+	 * 
+	 * @param c
+	 *            maximum number of visits of a user
+	 * @param n
+	 *            number of users
+	 * @param eps
+	 *            epsilon for differential privacy
+	 * @param delta
+	 *            delta for differential privacy
 	 * @return
 	 */
 	public static double calSmoothSensitivityUsing2ndMethod(int c, int n, double eps, double delta) {
@@ -45,52 +53,50 @@ public class SmoothSensitivityCalculator {
 				stopLarge = (ny > (c / (Math.log(c) - 1) + 1));
 			}
 			maxSensitivityN = Math.max(maxSensitivityN, sensivitityK);
-			if (stopSmall && stopLarge) 
+			if (stopSmall && stopLarge)
 				break;
 		}
-		
+
 		return maxSensitivityN;
 	}
 
-	public static void calSmoothSensitivity2ndMethod(double eps,
-	double delta,
-	int c,
-	double minSensitivity,
-	double N,
-	String dataGenerationOutputDir) {
+	public static void calSmoothSensitivity2ndMethod(double eps, double delta, int c, double minSensitivity, double N,
+			String dataGenerationOutputDir) {
 		try {
-			
+
 			String outputFile = FileNameUtil.getSmoothSensitivityInputFile(dataGenerationOutputDir, c);
 			PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(outputFile)));
 			for (int n = 1; n < N; n++) {
 				double maxSensitivityN = calSmoothSensitivityUsing2ndMethod(c, n, eps, delta);
-				if (maxSensitivityN <  minSensitivity)
+				if (maxSensitivityN < minSensitivity)
 					break;
 				writer.println(n + "," + maxSensitivityN);
-//				if (n % 10000 == 0) 
-//					System.out.println(n);
+				// if (n % 10000 == 0)
+				// System.out.println(n);
 			}
 			writer.close();
-			
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static void main(String[] args) {
 		System.out.println("start");
-		
+
 		double eps = Constants.DP_EPSILON;
 		double delta = Constants.DP_DELTA;
-		
+
 		double minSensitivity = Constants.MIN_SENSITIVITY;
 		double N = Constants.N + 10;
 		String dataGenerationOutputDir = Constants.DATA_GENERATOR_OUTPUT_DIR;
-		
-		for (int c = 1; c <= 50; c++)
+
+		int startC = Constants.START_C;
+		int endC = Constants.END_C;
+		for (int c = startC; c < endC; c++)
 			calSmoothSensitivity2ndMethod(eps, delta, c, minSensitivity, N, dataGenerationOutputDir);
-		
+
 		System.out.println("finished");
 	}
 }

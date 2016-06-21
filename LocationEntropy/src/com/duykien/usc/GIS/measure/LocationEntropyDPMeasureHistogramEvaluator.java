@@ -52,11 +52,76 @@ public class LocationEntropyDPMeasureHistogramEvaluator {
 	}
 	
 	/**
+	 * Read histogram from format:
+	 * Format: index,#original,#noise 
+	 * @param inputFile
+	 * @param bucketIndices
+	 * @param orgCount
+	 * @param noisyCount
+	 */
+	public static LEHistogramInfo readHistogram(String inputFile) {
+		try {
+			LEHistogramInfo info = new LEHistogramInfo();
+			
+			BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+			
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				StringTokenizer tokenizer = new StringTokenizer(line, ",");
+				info.getBucketIndices().add(Double.parseDouble(tokenizer.nextToken()));
+				info.getOrgCount().add(Integer.parseInt(tokenizer.nextToken()));
+				info.getNoisyCount().add(Integer.parseInt(tokenizer.nextToken()));
+				info.getOrigCDF().add(Double.parseDouble(tokenizer.nextToken()));
+				info.getNoisyCDF().add(Double.parseDouble(tokenizer.nextToken()));
+			}
+			
+			reader.close();
+			
+			return info;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**
 	 * Evaluate histogram:
 	 * - KL-digerence
 	 * @param histogramFile
 	 */
-	public static MeasurementResults evaluateHistogram(String uncutHistogramFile,
+	public static MeasurementResults evaluateHistogram(LEHistogramInfo uncutHistogramInfo,
+			LEHistogramInfo histogramInfo, 
+			String histogramErrorFile) {
+		MeasurementResults results = new MeasurementResults();
+		
+		results.klDivergenceNoisyVsCut = KLDivergenceCalculator.klDivergence(histogramInfo.getNoisyCount(), histogramInfo.getOrgCount());
+		results.ksTestValueNoisyVsCut = KSTestCalculator.calKolmogorovSmirnovTest(histogramInfo.getNoisyCDF(), histogramInfo.getOrigCDF());
+		
+		results.klDivergenceNoisyVsUncut = KLDivergenceCalculator.klDivergence(histogramInfo.getNoisyCount(), uncutHistogramInfo.getOrgCount());
+		results.ksTestValueNoisyVsUncut = KSTestCalculator.calKolmogorovSmirnovTest(histogramInfo.getNoisyCDF(), uncutHistogramInfo.getOrigCDF());
+		
+		results.klDivergenceCutVsUncut = KLDivergenceCalculator.klDivergence(histogramInfo.getOrgCount(), uncutHistogramInfo.getOrgCount());
+		results.ksTestValueCutVsUncut = KSTestCalculator.calKolmogorovSmirnovTest(histogramInfo.getOrigCDF(), uncutHistogramInfo.getOrigCDF());
+		
+		try {
+			PrintWriter writer = new PrintWriter(histogramErrorFile);
+			writer.println(results.toString());
+			writer.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		
+		
+		return results;
+	}
+	
+	/**
+	 * Evaluate histogram:
+	 * - KL-digerence
+	 * @param histogramFile
+	 */
+	public static MeasurementResults evaluateHistogramDisabled(String uncutHistogramFile,
 			String histogramFile, 
 			String histogramErrorFile) {
 		ArrayList<Double> bucketIndices = new ArrayList<>();
@@ -126,7 +191,7 @@ public class LocationEntropyDPMeasureHistogramEvaluator {
 		
 		String uncutHistogramFile = FileNameUtil.getOriginalHistogramFileName(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, bucketSize);
 		
-		evaluateHistogram(uncutHistogramFile, histogramFile, histogramErrorFile);
+		evaluateHistogramDisabled(uncutHistogramFile, histogramFile, histogramErrorFile);
 
 		System.out.println("Finished");
 

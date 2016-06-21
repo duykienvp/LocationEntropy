@@ -2,10 +2,15 @@ package com.duykien.usc.GIS;
 
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Map;
 
 import com.duykien.usc.GIS.DP.DifferentialPrivacyNoisePerturbator;
+import com.duykien.usc.GIS.DP.LocationEntropyInfo;
 import com.duykien.usc.GIS.DP.DifferentialPrivacyNoisePerturbator.NoisePertubationMethod;
 import com.duykien.usc.GIS.entropycalculator.LocationEntropyCalculator;
+import com.duykien.usc.GIS.io.VisitingDatasetIO;
+import com.duykien.usc.GIS.measure.LEHistogramInfo;
 import com.duykien.usc.GIS.measure.LocationEntropyDPMeasureHistogramEvaluator;
 import com.duykien.usc.GIS.measure.LocationEntropyDPMeasureHistogramGenerator;
 import com.duykien.usc.GIS.measure.MeasurementResults;
@@ -29,14 +34,14 @@ public class DPLocationEntropy {
 			int C,
 			NoisePertubationMethod noisePertubationMethod,
 			String noisePerturbationMethodStr,
-			String uncutHistogramFile) {
+			LEHistogramInfo uncutHistogramInfo,
+			Map<Integer, ArrayList<Integer>> visitMap) {
 		//calculate location entropy for fixed C
 		System.out.println("C = " + C + " Started");
-		String dataGenerationOutputFile = FileNameUtil.getDataGenerationOutputFile(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir);
 		
 		String locationEntropyOutputFile = FileNameUtil.getLocationEntropyOutputFile(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C);
 		
-		LocationEntropyCalculator.calLocationEntropy(dataGenerationOutputFile, C, locationEntropyOutputFile);
+		ArrayList<LocationEntropyInfo> leInfos = LocationEntropyCalculator.calLocationEntropy(visitMap, C, locationEntropyOutputFile);
 		System.out.println("LocationEntropyCalculator Finished");
 			
 		//Differential privacy 
@@ -44,18 +49,18 @@ public class DPLocationEntropy {
 		String sensitivityInputFile = FileNameUtil.getSmoothSensitivityInputFile(dataGenerationOutputDir, C);
 		
 		String dpOutputFile = FileNameUtil.getDPOutputFile(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C, useMStr, noisePerturbationMethodStr);
-		DifferentialPrivacyNoisePerturbator.perturbUnderDP(locationEntropyOutputFile, sensitivityInputFile, N, M, C, eps, delta, minSensitivity, useM, noisePertubationMethod, dpOutputFile);
+		DifferentialPrivacyNoisePerturbator.perturbUnderDP(leInfos, sensitivityInputFile, N, M, C, eps, delta, minSensitivity, useM, noisePertubationMethod, dpOutputFile);
 		System.out.println("DifferentialPrivacyNoisePerturbator Finished");
 		
 		
 		String histogramFile = FileNameUtil.getHistogramFileName(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C, useMStr, bucketSize, noisePerturbationMethodStr);
-		LocationEntropyDPMeasureHistogramGenerator.generateHistogram(dpOutputFile, N, bucketSize, df, histogramFile);
+		LEHistogramInfo leHistogramInfo = LocationEntropyDPMeasureHistogramGenerator.generateHistogram(leInfos, N, bucketSize, df, histogramFile);
 		
 		System.out.println("LocationEntropyDPMeasureHistogramGenerator Finished");
 		
 		String histogramErrorFile = FileNameUtil.getHistogramErrorFileName(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C, useMStr, bucketSize, noisePerturbationMethodStr);
 		
-		MeasurementResults results = LocationEntropyDPMeasureHistogramEvaluator.evaluateHistogram(uncutHistogramFile, histogramFile, histogramErrorFile);
+		MeasurementResults results = LocationEntropyDPMeasureHistogramEvaluator.evaluateHistogram(uncutHistogramInfo, leHistogramInfo, histogramErrorFile);
 
 		System.out.println("LocationEntropyDPMeasureHistogramEvaluator Finished");
 		System.out.println("C = " + C + " Finished");
@@ -83,11 +88,13 @@ public class DPLocationEntropy {
 			NoisePertubationMethod noisePertubationMethod,
 			String noisePerturbationMethodStr) {
 		String testResultFile = FileNameUtil.getTestResultsFileName(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, useMStr, bucketSize, noisePerturbationMethodStr);
-		
+		String dataGenerationOutputFile = FileNameUtil.getDataGenerationOutputFile(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir);
+		Map<Integer, ArrayList<Integer>> visitMap = VisitingDatasetIO.readData(dataGenerationOutputFile);
+		LEHistogramInfo uncutHistogramInfo = LocationEntropyDPMeasureHistogramEvaluator.readHistogram(uncutHistogramFile);
 		try {
 			PrintWriter writer = new PrintWriter(testResultFile);
 			for (int C = startC; C < endC; C++) {
-				MeasurementResults results = runDPLocationEntropy(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, eps, delta, minSensitivity, useM, useMStr, bucketSize, C, noisePertubationMethod, noisePerturbationMethodStr, uncutHistogramFile);
+				MeasurementResults results = runDPLocationEntropy(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, eps, delta, minSensitivity, useM, useMStr, bucketSize, C, noisePertubationMethod, noisePerturbationMethodStr, uncutHistogramInfo, visitMap);
 				writer.println(C 
 						+ "," + results.klDivergenceNoisyVsCut + "," + results.ksTestValueNoisyVsCut
 						+ "," + results.klDivergenceNoisyVsUncut + "," + results.ksTestValueNoisyVsUncut
@@ -126,10 +133,13 @@ public class DPLocationEntropy {
 		 */
 		boolean calOriginal = false;
 		if (calOriginal) {
+			System.out.println("Start calculating original data");
 			String dataGenerationOutputFile = FileNameUtil.getDataGenerationOutputFile(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir);
+			Map<Integer, ArrayList<Integer>> visitMap = VisitingDatasetIO.readData(dataGenerationOutputFile);
 			String locationEntropyOutputFile = FileNameUtil.getOriginalEntropyFileName(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir);
-			LocationEntropyCalculator.calLocationEntropy(dataGenerationOutputFile, maxC, locationEntropyOutputFile);
-			LocationEntropyDPMeasureHistogramGenerator.generateHistogram(locationEntropyOutputFile, N, bucketSize, df, uncutHistogramFile);
+			ArrayList<LocationEntropyInfo> leInfos = LocationEntropyCalculator.calLocationEntropy(visitMap, maxC, locationEntropyOutputFile);
+			LocationEntropyDPMeasureHistogramGenerator.generateHistogram(leInfos, N, bucketSize, df, uncutHistogramFile);
+			System.out.println("Finished calculating original data");
 				
 		}
 		
