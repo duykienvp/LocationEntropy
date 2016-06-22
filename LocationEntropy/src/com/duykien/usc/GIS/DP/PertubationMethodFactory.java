@@ -1,12 +1,12 @@
 package com.duykien.usc.GIS.DP;
 
 public class PertubationMethodFactory {
-	public enum EPertubationMethod {
+	public enum NoisePertubationMethod {
 		BASELINE(0), LIMIT(1), LIMIT_SS(2), LIMIT_CROWD(3), UNKNOWN(Integer.MIN_VALUE);
 
 		public final int value;
 
-		private EPertubationMethod(int value) {
+		private NoisePertubationMethod(int value) {
 			this.value = value;
 		}
 		
@@ -14,23 +14,23 @@ public class PertubationMethodFactory {
 			return value;
 		}
 
-		public static EPertubationMethod fromIntValue(int X) { // iterate through and pick }
+		public static NoisePertubationMethod fromIntValue(int X) { // iterate through and pick }
 			switch (X) {
 			case 0:
-				return EPertubationMethod.BASELINE;
+				return NoisePertubationMethod.BASELINE;
 			case 1:
-				return EPertubationMethod.LIMIT;
+				return NoisePertubationMethod.LIMIT;
 			case 2:
-				return EPertubationMethod.LIMIT_SS;
+				return NoisePertubationMethod.LIMIT_SS;
 			case 3: 
-				return EPertubationMethod.LIMIT_CROWD;
+				return NoisePertubationMethod.LIMIT_CROWD;
 			default:
-				return EPertubationMethod.UNKNOWN;
+				return NoisePertubationMethod.UNKNOWN;
 			}
 		}
 		
 		public String toString() {
-			EPertubationMethod method = fromIntValue(value);
+			NoisePertubationMethod method = fromIntValue(value);
 			switch (method) {
 			case BASELINE:
 				return "BASELINE";

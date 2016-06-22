@@ -21,6 +21,10 @@ public class DPUtil {
 			return "0.05";
 		if (isDoubleEqual(eps, 0.1)) 
 			return "0.1";
+		if (isDoubleEqual(eps, 0.125)) 
+			return "0.125";
+		if (isDoubleEqual(eps, 5.0/30.0)) 
+			return "0.167";
 		if (isDoubleEqual(eps, 0.2)) 
 			return "0.2";
 		if (isDoubleEqual(eps, 0.25)) 
@@ -37,6 +41,8 @@ public class DPUtil {
 			return "5";
 		if (isDoubleEqual(eps, 10)) 
 			return "10";
+		if (isDoubleEqual(eps, 20)) 
+			return "20";
 		
 		return "ERROR";
 	}

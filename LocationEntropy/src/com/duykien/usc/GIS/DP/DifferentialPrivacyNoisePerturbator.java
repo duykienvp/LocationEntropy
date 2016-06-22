@@ -14,13 +14,10 @@ import org.apache.commons.math3.distribution.LaplaceDistribution;
 
 import com.duykien.usc.GIS.Constants;
 import com.duykien.usc.GIS.FileNameUtil;
+import com.duykien.usc.GIS.DP.PertubationMethodFactory.NoisePertubationMethod;
 import com.duykien.usc.GIS.sensitivitycalculator.SensitivityCalculator;
 
 public class DifferentialPrivacyNoisePerturbator {
-	
-	public enum NoisePertubationMethod {
-		GLOBAL_LAPLACE, SMOOTH_SENSITIVITY_2ND_METHOD
-	}
 	
 	private static LaplaceDistribution laplaceDistribution = new LaplaceDistribution(0, 1);
 	private static LaplaceDistribution globalLaplaceDistribution = new LaplaceDistribution(0, 1);
@@ -77,6 +74,12 @@ public class DifferentialPrivacyNoisePerturbator {
 		globalLaplaceDistribution = new LaplaceDistribution(0, b);
 	}
 	
+	public static void prepareLaplaceDistributionForCrowdBlending(int c, double eps, double m, int k) {
+		double sensitivity = SensitivityCalculator.boundByNC(k, c);
+		double b = (m * sensitivity) / eps;
+		globalLaplaceDistribution = new LaplaceDistribution(0, b);
+	}
+	
 	/**
 	 * Perturb entropy using differential privacy using Smooth Sensitivity, method 2, which creates (epsilon, delta)-DP.
 	 * Entropy input format: locationID,num_users,entropy
@@ -102,23 +105,25 @@ public class DifferentialPrivacyNoisePerturbator {
 			double eps, 
 			double delta, 
 			double minSensitivity,
+			int kCrowd,
 			boolean useM,
 			NoisePertubationMethod noisePertubationMethod,
 			String outputFile) {
 		try {
 			Map<Integer, Double> sensitivityMap = null;
-			if (noisePertubationMethod == NoisePertubationMethod.SMOOTH_SENSITIVITY_2ND_METHOD) {
+			if (noisePertubationMethod == NoisePertubationMethod.LIMIT_SS) {
 				sensitivityMap = readSensitivity(sensitivityInputFile);
 			}
 			BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
 			
 			double multipleLocationMagnitude = useM ? m : 1;
 			
-			if (noisePertubationMethod == NoisePertubationMethod.GLOBAL_LAPLACE)
+			if (noisePertubationMethod == NoisePertubationMethod.LIMIT)
 				prepareLaplaceDistribution(c, eps, multipleLocationMagnitude);
+			if (noisePertubationMethod == NoisePertubationMethod.LIMIT_CROWD) 
+				prepareLaplaceDistributionForCrowdBlending(c, eps, multipleLocationMagnitude, kCrowd);
 				
 			
-			String line = null;
 			for (int i = 0; i < leInfos.size(); i++) {
 				LocationEntropyInfo leInfo = leInfos.get(i);
 				
@@ -128,7 +133,7 @@ public class DifferentialPrivacyNoisePerturbator {
 				
 				//cal noise
 				double noise = 0;
-				if (noisePertubationMethod == NoisePertubationMethod.SMOOTH_SENSITIVITY_2ND_METHOD) {
+				if (noisePertubationMethod == NoisePertubationMethod.LIMIT_SS) {
 					//smooth sensitivity
 					//get sensitivity; if unable, use the min sensitivity 
 					Double sensitivity = sensitivityMap.get(n);
@@ -152,11 +157,22 @@ public class DifferentialPrivacyNoisePerturbator {
 					noise = privateEntropy - entropy;
 				}
 				
+				//k-crowd blending
+				if ((noisePertubationMethod == NoisePertubationMethod.LIMIT_CROWD)
+						&& (n < kCrowd)) {
+					privateEntropy = 0;
+					noise = entropy;
+				}
+				
 				leInfo.setPrivateEntropy(privateEntropy);
 				leInfo.setNoise(noise);
 				
 				//write output
-				String outputLine = line + "," + privateEntropy + "," + noise;
+				String outputLine = leInfo.getLocationId() 
+						+ "," + n
+						+ "," + entropy
+						+ "," + privateEntropy 
+						+ "," + noise;
 				writer.write(outputLine);
 				writer.newLine();
 			
@@ -199,7 +215,7 @@ public class DifferentialPrivacyNoisePerturbator {
 			String outputFile) {
 		try {
 			Map<Integer, Double> sensitivityMap = null;
-			if (noisePertubationMethod == NoisePertubationMethod.SMOOTH_SENSITIVITY_2ND_METHOD) {
+			if (noisePertubationMethod == NoisePertubationMethod.LIMIT_SS) {
 				sensitivityMap = readSensitivity(sensitivityInputFile);
 			}
 			BufferedReader reader = new BufferedReader(new FileReader(entropyInputFile));
@@ -207,7 +223,7 @@ public class DifferentialPrivacyNoisePerturbator {
 			
 			double multipleLocationMagnitude = useM ? m : 1;
 			
-			if (noisePertubationMethod == NoisePertubationMethod.GLOBAL_LAPLACE)
+			if (noisePertubationMethod == NoisePertubationMethod.LIMIT)
 				prepareLaplaceDistribution(c, eps, multipleLocationMagnitude);
 				
 			
@@ -224,7 +240,7 @@ public class DifferentialPrivacyNoisePerturbator {
 				
 				//cal noise
 				double noise = 0;
-				if (noisePertubationMethod == NoisePertubationMethod.SMOOTH_SENSITIVITY_2ND_METHOD) {
+				if (noisePertubationMethod == NoisePertubationMethod.LIMIT_SS) {
 					//smooth sensitivity
 					//get sensitivity; if unable, use the min sensitivity 
 					Double sensitivity = sensitivityMap.get(n);
@@ -287,9 +303,8 @@ public class DifferentialPrivacyNoisePerturbator {
 		
 		String sensitivityInputFile = FileNameUtil.getSmoothSensitivityInputFile(dataGenerationOutputDir, C, epsStr);
 		
-		NoisePertubationMethod noisePertubationMethod = NoisePertubationMethod.SMOOTH_SENSITIVITY_2ND_METHOD;
-		String noisePerturbationMethodStr = Constants.DP_NOISE_PERTURBATION_METHOD_STR; 
-		String dpOutputFile = FileNameUtil.getDPOutputFile(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C, epsStr, useMStr, noisePerturbationMethodStr);
+		NoisePertubationMethod noisePertubationMethod = NoisePertubationMethod.LIMIT_SS;
+		String dpOutputFile = FileNameUtil.getDPOutputFile(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C, epsStr, useMStr, noisePertubationMethod.toString());
 		perturbUnderDPDisabled(locationEntropyOutputFile, sensitivityInputFile, N, M, C, eps, delta, minSensitivity, useM, noisePertubationMethod,  dpOutputFile);
 		System.out.println("Finished");
 	}

@@ -79,11 +79,27 @@ public class LocationEntropyDPMeasureEntropyEvaluator {
 		ArrayList<LocationEntropyInfo> convertedOriginals = convertEntropyToBucketValue(rawLocationEntropyList,
 				bucketSize);
 		ArrayList<LocationEntropyInfo> convertedDP = convertEntropyToBucketValue(leDPList, bucketSize);
+		
+		int L = convertedOriginals.size();
+		
+		//MSE
+		double[] actualEntropy = new double[L];
+		double[] limitedEntropy = new double[L];
+		double[] privateEntropy = new double[L];
+		for (int i = 0; i < L; i++) {
+			actualEntropy[i] = convertedOriginals.get(i).getEntropy();
+			limitedEntropy[i] = convertedDP.get(i).getEntropy();
+			privateEntropy[i] = convertedDP.get(i).getPrivateEntropy();
+		}
+		results.MSEPrivateVsActual = MSECalculator.calMSE(privateEntropy, actualEntropy);
+		results.MSELimitedVsActual = MSECalculator.calMSE(limitedEntropy, actualEntropy);
+		results.MSEPrivateVsLimited = MSECalculator.calMSE(privateEntropy, limitedEntropy);
 
+		
+		//KL-divergence and KS test
 		convertedOriginals = convertEntropyToProbabilities(convertedOriginals);
 		convertedDP = convertEntropyToProbabilities(convertedDP);
 
-		int L = convertedOriginals.size();
 
 		// prob and cdf of originals
 		double[] pActuals = new double[L];

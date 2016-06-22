@@ -97,6 +97,7 @@ public class SmoothSensitivityCalculator {
 		int endC = Constants.END_C;
 		startC = 5;
 		endC = startC + 1;
+		eps = 5.0/30.0;
 		for (int c = startC; c < endC; c++)
 			calSmoothSensitivity2ndMethod(eps, delta, c, minSensitivity, N, dataGenerationOutputDir);
 

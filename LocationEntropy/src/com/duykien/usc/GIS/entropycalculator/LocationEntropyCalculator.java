@@ -30,10 +30,12 @@ public class LocationEntropyCalculator {
 	 * @param outputFile
 	 * @return list of location entropy infos
 	 */
-	public static ArrayList<LocationEntropyInfo> calLocationEntropy(Map<Integer, ArrayList<Integer>> visitMap, int C, String outputFile) {
+	public static ArrayList<LocationEntropyInfo> calLocationEntropy(Map<Integer, ArrayList<Integer>> visitMap, int C, String outputFile, boolean writeData) {
 		try {
 			ArrayList<LocationEntropyInfo> infos = new ArrayList<>();
-			PrintWriter writer = new PrintWriter(outputFile);
+			PrintWriter writer = null;
+			if (writeData)
+				writer = new PrintWriter(outputFile);
 			
 			int maxL = Collections.max(visitMap.keySet());
 			
@@ -51,7 +53,8 @@ public class LocationEntropyCalculator {
 					double entropy = calEntropy(limitedCounts);
 					
 					//write data: locationId,num_users,entropy
-					writer.println(locationId + "," + counts.size() + "," + entropy);
+					if (writeData)
+						writer.println(locationId + "," + counts.size() + "," + entropy);
 									
 					info.setNumUser(counts.size());
 					info.setEntropy(entropy);
@@ -63,7 +66,8 @@ public class LocationEntropyCalculator {
 				infos.add(info);
 			}
 			
-			writer.close();
+			if (writeData)
+				writer.close();
 			
 			return infos;
 		} catch (Exception e) {
@@ -172,7 +176,7 @@ public class LocationEntropyCalculator {
 		String locationEntropyOutputFile = FileNameUtil.getLocationEntropyOutputFile(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C);
 		
 		Map<Integer, ArrayList<Integer>> visitMap = VisitingDatasetIO.readData(dataGenerationOutputFile);
-		calLocationEntropy(visitMap, C, locationEntropyOutputFile);
+		calLocationEntropy(visitMap, C, locationEntropyOutputFile, true);
 //		calLocationEntropy(dataGenerationOutputFile, C, locationEntropyOutputFile);
 		System.out.println("Finished");
 	}

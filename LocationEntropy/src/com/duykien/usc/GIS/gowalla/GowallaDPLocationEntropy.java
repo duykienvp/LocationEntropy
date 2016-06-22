@@ -8,7 +8,7 @@ import java.util.Map;
 import com.duykien.usc.GIS.Constants;
 import com.duykien.usc.GIS.DPLocationEntropy;
 import com.duykien.usc.GIS.FileNameUtil;
-import com.duykien.usc.GIS.DP.DifferentialPrivacyNoisePerturbator.NoisePertubationMethod;
+import com.duykien.usc.GIS.DP.PertubationMethodFactory.NoisePertubationMethod;
 import com.duykien.usc.GIS.datagenerator.VisitingDatasetGenerator;
 import com.duykien.usc.GIS.entropycalculator.LocationEntropyCalculator;
 import com.duykien.usc.GIS.io.VisitingDatasetIO;
@@ -111,7 +111,6 @@ public class GowallaDPLocationEntropy {
 		int startC = Constants.START_C;
 		int endC = Constants.END_C;
 		NoisePertubationMethod noisePertubationMethod = Constants.DP_NOISE_PERTURBATION_METHOD;
-		String noisePerturbationMethodStr = Constants.DP_NOISE_PERTURBATION_METHOD_STR; 
 //		DPLocationEntropy.runTestForAllC(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, eps, delta, minSensitivity, useM, useMStr, bucketSize, uncutHistogramFile, startC, endC, noisePertubationMethod, noisePerturbationMethodStr);
 	}
 }

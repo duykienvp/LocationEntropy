@@ -195,7 +195,7 @@ public class LocationEntropyDPMeasureHistogramGenerator {
 		String useMStr = useM ? "" : "NOT";
 		String epsStr = DPUtil.toEpsilonString(Constants.DP_EPSILON);
 		
-		String noisePerturbationMethodStr = Constants.DP_NOISE_PERTURBATION_METHOD_STR; 
+		String noisePerturbationMethodStr = Constants.DP_NOISE_PERTURBATION_METHOD.toString(); 
 		
 		String dpOutputFile = FileNameUtil.getDPOutputFile(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C, epsStr, useMStr, noisePerturbationMethodStr);
 		

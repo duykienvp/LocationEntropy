@@ -137,10 +137,11 @@ public class VisitingDatasetGenerator {
 		
 		System.out.println("Start generating");
 //		generate(L, N, maxM, maxC, ze, dataGenerationOutputFile);
-		System.out.println("Finished generating");
-		int M = 10;
+		
+		int M = 20;
 		String limitedFile = FileNameUtil.getDataGenerationOutputFile(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir);
 		limitMaximumNumOfLocationsPerUser(dataGenerationOutputFile, M, limitedFile);
+		System.out.println("Finished generating");
 	}
 
 }

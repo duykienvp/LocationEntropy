@@ -8,7 +8,7 @@ import java.util.Map;
 import com.duykien.usc.GIS.DP.DPUtil;
 import com.duykien.usc.GIS.DP.DifferentialPrivacyNoisePerturbator;
 import com.duykien.usc.GIS.DP.LocationEntropyInfo;
-import com.duykien.usc.GIS.DP.DifferentialPrivacyNoisePerturbator.NoisePertubationMethod;
+import com.duykien.usc.GIS.DP.PertubationMethodFactory.NoisePertubationMethod;
 import com.duykien.usc.GIS.entropycalculator.LocationEntropyCalculator;
 import com.duykien.usc.GIS.io.LocationEntropyIO;
 import com.duykien.usc.GIS.io.VisitingDatasetIO;
@@ -31,6 +31,7 @@ public class DPLocationEntropy {
 			double eps,
 			double delta,
 			double minSensitivity,
+			int kCrowd,
 			boolean useM,
 			String useMStr,
 			double bucketSize,
@@ -43,7 +44,7 @@ public class DPLocationEntropy {
 		//calculate location entropy for fixed C		
 		String locationEntropyOutputFile = FileNameUtil.getLocationEntropyOutputFile(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C);
 		
-		ArrayList<LocationEntropyInfo> leInfos = LocationEntropyCalculator.calLocationEntropy(visitMap, C, locationEntropyOutputFile);
+		ArrayList<LocationEntropyInfo> leInfos = LocationEntropyCalculator.calLocationEntropy(visitMap, C, locationEntropyOutputFile, true);
 		System.out.println("LocationEntropyCalculator Finished");
 			
 		//Differential privacy 
@@ -51,7 +52,7 @@ public class DPLocationEntropy {
 		String sensitivityInputFile = FileNameUtil.getSmoothSensitivityInputFile(dataGenerationOutputDir, C, epsStr);
 		
 		String dpOutputFile = FileNameUtil.getDPOutputFile(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C, epsStr, useMStr, noisePerturbationMethodStr);
-		DifferentialPrivacyNoisePerturbator.perturbUnderDP(leInfos, sensitivityInputFile, N, M, C, eps, delta, minSensitivity, useM, noisePertubationMethod, dpOutputFile);
+		DifferentialPrivacyNoisePerturbator.perturbUnderDP(leInfos, sensitivityInputFile, N, M, C, eps, delta, minSensitivity, kCrowd, useM, noisePertubationMethod, dpOutputFile);
 		System.out.println("DifferentialPrivacyNoisePerturbator Finished");
 		
 		//evaluate histogram
@@ -74,7 +75,7 @@ public class DPLocationEntropy {
 		return results;
 	}
 	
-	public static void runTestForAllC(String prefix,
+	public static void runTestFixMAndEpsilonVaryC(String prefix,
 			int L,
 			int N,
 			int M,
@@ -85,6 +86,7 @@ public class DPLocationEntropy {
 			double eps,
 			double delta,
 			double minSensitivity,
+			int kCrowd,
 			boolean useM,
 			String useMStr,
 			double bucketSize,
@@ -92,22 +94,34 @@ public class DPLocationEntropy {
 			int startC,
 			int endC,
 			NoisePertubationMethod noisePertubationMethod,
-			String noisePerturbationMethodStr,
-			String rawLocationEntropyFile) {
+			String rawLocationEntropyFile,
+			boolean measureOnly) {
+		String noisePerturbationMethodStr = noisePertubationMethod.toString();
 		ArrayList<LocationEntropyInfo> rawLocationEntropyList = LocationEntropyIO.readLocationEntropy(rawLocationEntropyFile);
-		String epsStr = DPUtil.toEpsilonString(eps);
-		String testResultFile = FileNameUtil.getTestResultsFileName(prefix, L, N, M, maxC, ze, df, epsStr, dataGenerationOutputDir, useMStr, bucketSize, noisePerturbationMethodStr);
 		String dataGenerationOutputFile = FileNameUtil.getDataGenerationOutputFile(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir);
 		Map<Integer, ArrayList<Integer>> visitMap = VisitingDatasetIO.readData(dataGenerationOutputFile);
 		LEHistogramInfo uncutHistogramInfo = LocationEntropyDPMeasureHistogramEvaluator.readHistogram(uncutHistogramFile);
+		String epsStr = DPUtil.toEpsilonString(eps);
+		String testResultFile = FileNameUtil.getTestResultsFileName(prefix, L, N, M, maxC, ze, df, epsStr, dataGenerationOutputDir, useMStr, bucketSize, noisePerturbationMethodStr);
 		try {
 			PrintWriter writer = new PrintWriter(testResultFile);
 			for (int C = startC; C < endC; C++) {
-				MeasurementResults results = runDPLocationEntropy(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, eps, delta, minSensitivity, useM, useMStr, bucketSize, C, noisePertubationMethod, noisePerturbationMethodStr, uncutHistogramInfo, rawLocationEntropyList, visitMap);
-				writer.println(C 
+				
+				MeasurementResults results = new MeasurementResults();
+				if (measureOnly) {
+					String dpOutputFile = FileNameUtil.getDPOutputFile(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C, epsStr, useMStr, noisePerturbationMethodStr);
+					ArrayList<LocationEntropyInfo> dpLocationEntropyList = LocationEntropyIO.readLocationEntropy(dpOutputFile);
+					results = LocationEntropyDPMeasureEntropyEvaluator.evaluateEntropy(rawLocationEntropyList, dpLocationEntropyList, bucketSize);
+				} else {
+					results = runDPLocationEntropy(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, eps, delta, minSensitivity, kCrowd, useM, useMStr, bucketSize, C, noisePertubationMethod, noisePerturbationMethodStr, uncutHistogramInfo, rawLocationEntropyList, visitMap);
+				}
+				writer.println(epsStr
+						+ "," + C 
 						+ "," + results.klDivergencePrivateVsLimited + "," + results.ksTestValuePrivateVsLimited
 						+ "," + results.klDivergencePrivateVsActual + "," + results.ksTestValuePrivateVsActual
-						+ "," + results.klDivergenceLimitedVsActual + "," + results.ksTestValueLimitedVsActual); 
+						+ "," + results.klDivergenceLimitedVsActual + "," + results.ksTestValueLimitedVsActual
+						+ "," + results.MSEPrivateVsActual + "," + results.MSELimitedVsActual
+						+ "," + results.MSEPrivateVsLimited); 
 			}
 			
 			writer.close();
@@ -127,15 +141,17 @@ public class DPLocationEntropy {
 			String dataGenerationOutputDir,
 			double delta,
 			double minSensitivity,
+			int kCrowd,
 			boolean useM,
 			String useMStr,
 			double bucketSize,
 			String uncutHistogramFile,
 			int C,
 			NoisePertubationMethod noisePertubationMethod,
-			String noisePerturbationMethodStr,
 			String rawLocationEntropyFile,
-			double[] epsilons) {
+			double[] epsilons,
+			boolean measureOnly) {
+		String noisePerturbationMethodStr = noisePertubationMethod.toString();
 		ArrayList<LocationEntropyInfo> rawLocationEntropyList = LocationEntropyIO.readLocationEntropy(rawLocationEntropyFile);
 		String dataGenerationOutputFile = FileNameUtil.getDataGenerationOutputFile(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir);
 		Map<Integer, ArrayList<Integer>> visitMap = VisitingDatasetIO.readData(dataGenerationOutputFile);
@@ -149,21 +165,144 @@ public class DPLocationEntropy {
 				String epsStr = DPUtil.toEpsilonString(eps);
 				String testResultFile = FileNameUtil.getTestResultsFileName(prefix, L, N, M, maxC, ze, df, epsStr, dataGenerationOutputDir, useMStr, bucketSize, noisePerturbationMethodStr);
 				PrintWriter writer = new PrintWriter(testResultFile);
-				MeasurementResults results = runDPLocationEntropy(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, eps, delta, minSensitivity, useM, useMStr, bucketSize, C, noisePertubationMethod, noisePerturbationMethodStr, uncutHistogramInfo, rawLocationEntropyList, visitMap);
+				
+				MeasurementResults results = new MeasurementResults();
+				if (measureOnly) {
+					String dpOutputFile = FileNameUtil.getDPOutputFile(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C, epsStr, useMStr, noisePerturbationMethodStr);
+					ArrayList<LocationEntropyInfo> dpLocationEntropyList = LocationEntropyIO.readLocationEntropy(dpOutputFile);
+					results = LocationEntropyDPMeasureEntropyEvaluator.evaluateEntropy(rawLocationEntropyList, dpLocationEntropyList, bucketSize);
+				} else {
+					results = runDPLocationEntropy(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, eps, delta, minSensitivity, kCrowd, useM, useMStr, bucketSize, C, noisePertubationMethod, noisePerturbationMethodStr, uncutHistogramInfo, rawLocationEntropyList, visitMap);
+				}
+				
 				writer.println(C 
 						+ "," + results.klDivergencePrivateVsLimited + "," + results.ksTestValuePrivateVsLimited
 						+ "," + results.klDivergencePrivateVsActual + "," + results.ksTestValuePrivateVsActual
-						+ "," + results.klDivergenceLimitedVsActual + "," + results.ksTestValueLimitedVsActual);
+						+ "," + results.klDivergenceLimitedVsActual + "," + results.ksTestValueLimitedVsActual
+						+ "," + results.MSEPrivateVsActual + "," + results.MSELimitedVsActual
+						+ "," + results.MSEPrivateVsLimited);
 				writer.close();
 				
 				allEpsilonWriter.println(epsStr
 						+ "," + C 
 						+ "," + results.klDivergencePrivateVsLimited + "," + results.ksTestValuePrivateVsLimited
 						+ "," + results.klDivergencePrivateVsActual + "," + results.ksTestValuePrivateVsActual
-						+ "," + results.klDivergenceLimitedVsActual + "," + results.ksTestValueLimitedVsActual);
+						+ "," + results.klDivergenceLimitedVsActual + "," + results.ksTestValueLimitedVsActual
+						+ "," + results.MSEPrivateVsActual + "," + results.MSELimitedVsActual
+						+ "," + results.MSEPrivateVsLimited);
 			}
 			
 			allEpsilonWriter.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void runTestFixCAndEpsilonVaryM(String prefix,
+			int L,
+			int N,
+			int maxM,
+			int maxC,
+			double ze,
+			DecimalFormat df,
+			String dataGenerationOutputDir,
+			double delta,
+			double minSensitivity,
+			int kCrowd,
+			boolean useM,
+			String useMStr,
+			double bucketSize,
+			String uncutHistogramFile,
+			int C,
+			NoisePertubationMethod noisePertubationMethod,
+			String rawLocationEntropyFile,
+			double eps,
+			int[] Ms,
+			boolean measureOnly) {
+		String noisePerturbationMethodStr = noisePertubationMethod.toString();
+		ArrayList<LocationEntropyInfo> rawLocationEntropyList = LocationEntropyIO.readLocationEntropy(rawLocationEntropyFile);
+		
+		try {
+			
+			String allMResultFile = FileNameUtil.getTestResultsFileName(prefix, L, N, 0, maxC, ze, df, DPUtil.toEpsilonString(eps), dataGenerationOutputDir, useMStr, bucketSize, noisePerturbationMethodStr);
+			PrintWriter allWriter = new PrintWriter(allMResultFile); 
+			
+			for (int i = 0; i < Ms.length; i++) {
+				int M = Ms[i];
+				double epsM = eps/M;
+				String dataGenerationOutputFile = FileNameUtil.getDataGenerationOutputFile(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir);
+				Map<Integer, ArrayList<Integer>> visitMap = VisitingDatasetIO.readData(dataGenerationOutputFile);
+				LEHistogramInfo uncutHistogramInfo = LocationEntropyDPMeasureHistogramEvaluator.readHistogram(uncutHistogramFile);
+				
+				String epsStr = DPUtil.toEpsilonString(epsM);
+				String testResultFile = FileNameUtil.getTestResultsFileName(prefix, L, N, M, maxC, ze, df, epsStr, dataGenerationOutputDir, useMStr, bucketSize, noisePerturbationMethodStr);
+				PrintWriter writer = new PrintWriter(testResultFile);
+				
+				MeasurementResults results = new MeasurementResults();
+				if (measureOnly) {
+					String dpOutputFile = FileNameUtil.getDPOutputFile(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C, epsStr, useMStr, noisePerturbationMethodStr);
+					ArrayList<LocationEntropyInfo> dpLocationEntropyList = LocationEntropyIO.readLocationEntropy(dpOutputFile);
+					results = LocationEntropyDPMeasureEntropyEvaluator.evaluateEntropy(rawLocationEntropyList, dpLocationEntropyList, bucketSize);
+				} else {
+					results = runDPLocationEntropy(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, epsM, delta, minSensitivity, kCrowd, useM, useMStr, bucketSize, C, noisePertubationMethod, noisePerturbationMethodStr, uncutHistogramInfo, rawLocationEntropyList, visitMap);
+				}
+				
+				writer.println(C 
+						+ "," + results.klDivergencePrivateVsLimited + "," + results.ksTestValuePrivateVsLimited
+						+ "," + results.klDivergencePrivateVsActual + "," + results.ksTestValuePrivateVsActual
+						+ "," + results.klDivergenceLimitedVsActual + "," + results.ksTestValueLimitedVsActual
+						+ "," + results.MSEPrivateVsActual + "," + results.MSELimitedVsActual
+						+ "," + results.MSEPrivateVsLimited);
+				writer.close();
+				
+				allWriter.println(M
+						+ "," + C 
+						+ "," + results.klDivergencePrivateVsLimited + "," + results.ksTestValuePrivateVsLimited
+						+ "," + results.klDivergencePrivateVsActual + "," + results.ksTestValuePrivateVsActual
+						+ "," + results.klDivergenceLimitedVsActual + "," + results.ksTestValueLimitedVsActual
+						+ "," + results.MSEPrivateVsActual + "," + results.MSELimitedVsActual
+						+ "," + results.MSEPrivateVsLimited);
+			}
+			
+			allWriter.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void runBaseline(String prefix,
+			int L,
+			int N,
+			int maxM,
+			int maxC,
+			double ze,
+			DecimalFormat df,
+			String dataGenerationOutputDir,
+			boolean useM,
+			String useMStr,
+			double bucketSize,
+			String uncutHistogramFile,
+			double eps) {
+		NoisePertubationMethod noisePertubationMethod = NoisePertubationMethod.LIMIT;
+		String noisePerturbationMethodStr = NoisePertubationMethod.BASELINE.toString();
+		String rawLocationEntropyFile = Constants.DATA_GENERATOR_OUTPUT_DIR + "synthetic_data_L10000_N100000_M100_maxC1000_ze1.0_C1000_entropy_actual.csv";
+		ArrayList<LocationEntropyInfo> rawLocationEntropyList = LocationEntropyIO.readLocationEntropy(rawLocationEntropyFile);
+		String dataGenerationOutputFile = FileNameUtil.getDataGenerationOutputFile(prefix, L, N, maxM, maxC, ze, df, dataGenerationOutputDir);
+		Map<Integer, ArrayList<Integer>> visitMap = VisitingDatasetIO.readData(dataGenerationOutputFile);
+		LEHistogramInfo uncutHistogramInfo = LocationEntropyDPMeasureHistogramEvaluator.readHistogram(uncutHistogramFile);
+		try {
+			String epsStr = DPUtil.toEpsilonString(eps);
+			String testResultFile = FileNameUtil.getTestResultsFileName(prefix, L, N, maxM, maxC, ze, df, epsStr, dataGenerationOutputDir, useMStr, bucketSize, noisePerturbationMethodStr);
+			PrintWriter writer = new PrintWriter(testResultFile);
+			MeasurementResults results = runDPLocationEntropy(prefix, L, N, maxM, maxC, ze, df, dataGenerationOutputDir, eps, 0, 0, 1, useM, useMStr, bucketSize, maxC, noisePertubationMethod, noisePerturbationMethodStr, uncutHistogramInfo, rawLocationEntropyList, visitMap);
+			writer.println(maxC 
+					+ "," + results.klDivergencePrivateVsLimited + "," + results.ksTestValuePrivateVsLimited
+					+ "," + results.klDivergencePrivateVsActual + "," + results.ksTestValuePrivateVsActual
+					+ "," + results.klDivergenceLimitedVsActual + "," + results.ksTestValueLimitedVsActual
+					+ "," + results.MSEPrivateVsActual + "," + results.MSELimitedVsActual
+					+ "," + results.MSEPrivateVsLimited);
+			writer.close();
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -184,6 +323,7 @@ public class DPLocationEntropy {
 		double minSensitivity = Constants.MIN_SENSITIVITY;
 		
 		boolean useM = Constants.USE_M;
+//		boolean useM = true;
 		String useMStr = useM ? "" : "NOT";
 		
 		double bucketSize = Constants.BUCKET_SIZE;
@@ -201,7 +341,7 @@ public class DPLocationEntropy {
 			System.out.println("Start calculating original data");
 			String dataGenerationOutputFile = FileNameUtil.getDataGenerationOutputFile(prefix, L, N, maxM, maxC, ze, df, dataGenerationOutputDir);
 			Map<Integer, ArrayList<Integer>> visitMap = VisitingDatasetIO.readData(dataGenerationOutputFile);
-			ArrayList<LocationEntropyInfo> leInfos = LocationEntropyCalculator.calLocationEntropy(visitMap, maxC, rawLocationEntropyFile);
+			ArrayList<LocationEntropyInfo> leInfos = LocationEntropyCalculator.calLocationEntropy(visitMap, maxC, rawLocationEntropyFile, true);
 //			ArrayList<LocationEntropyInfo> leInfos = LocationEntropyIO.readLocationEntropy(rawLocationEntropyFile);
 			LocationEntropyDPMeasureHistogramGenerator.generateHistogram(leInfos, N, bucketSize, df, uncutHistogramFile);
 			System.out.println("Finished calculating original data");
@@ -212,16 +352,25 @@ public class DPLocationEntropy {
 		if (stop)
 			return;
 		
-		int startC = Constants.C;
-		int endC = Constants.C + 1;
-		NoisePertubationMethod noisePertubationMethod = Constants.DP_NOISE_PERTURBATION_METHOD;
-		String noisePerturbationMethodStr = Constants.DP_NOISE_PERTURBATION_METHOD_STR; 
+		int startC = Constants.START_C;
+		int endC = Constants.END_C;
+		NoisePertubationMethod noisePertubationMethod = NoisePertubationMethod.LIMIT_SS;
+		int kCrowd = Constants.K_CROWD;
 		
 		int C = Constants.C;
-		double[] epsilons = new double[] {0.05, 0.25, 0.5, 2.5, 5};
-		runTestFixMAndCVaryEpsilon(prefix, L, N, M, maxM, maxC, ze, df, dataGenerationOutputDir, delta, minSensitivity, useM, useMStr, bucketSize, uncutHistogramFile, C, noisePertubationMethod, noisePerturbationMethodStr, rawLocationEntropyFile, epsilons);
-//		runTestForAllC(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, eps, delta, minSensitivity, useM, useMStr, bucketSize, uncutHistogramFile, startC, endC, noisePertubationMethod, noisePerturbationMethodStr);
+		double[] epsilons = new double[] {0.02, 0.1, 0.2, 1, 2};
 		
+		boolean measureOnly = false; //only measure or run the full experiments
+		
+		int[] Ms = new int[] {1, 2, 5, 10, 20, 30, 40, 50};
+		
+//		runBaseline(prefix, L, N, maxM, maxC, ze, df, dataGenerationOutputDir, useM, useMStr, bucketSize, uncutHistogramFile, 1);
+//		runTestFixMAndCVaryEpsilon(prefix, L, N, M, maxM, maxC, ze, df, dataGenerationOutputDir, delta, minSensitivity, kCrowd, useM, useMStr, bucketSize, uncutHistogramFile, C, noisePertubationMethod, rawLocationEntropyFile, epsilons, measureOnly);
+//		runTestFixMAndEpsilonVaryC(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, eps, delta, minSensitivity, kCrowd, useM, useMStr, bucketSize, uncutHistogramFile, startC, endC, noisePertubationMethod, rawLocationEntropyFile, measureOnly);
+		
+		//for runTestFixCAndEpsilonVaryM
+		eps = 5.0;
+		runTestFixCAndEpsilonVaryM(prefix, L, N, maxM, maxC, ze, df, dataGenerationOutputDir, delta, minSensitivity, kCrowd, useM, useMStr, bucketSize, uncutHistogramFile, C, noisePertubationMethod, rawLocationEntropyFile, eps, Ms, measureOnly);
 	}
 
 }

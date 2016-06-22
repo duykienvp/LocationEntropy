@@ -185,7 +185,7 @@ public class LocationEntropyDPMeasureHistogramEvaluator {
 		double eps = Constants.DP_EPSILON;
 		String epsStr = DPUtil.toEpsilonString(eps);
 		double bucketSize = Constants.BUCKET_SIZE;
-		String noisePerturbationMethodStr = Constants.DP_NOISE_PERTURBATION_METHOD_STR; 
+		String noisePerturbationMethodStr = Constants.DP_NOISE_PERTURBATION_METHOD.toString(); 
 		
 		String histogramFile = FileNameUtil.getHistogramFileName(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, C,
 				epsStr,
