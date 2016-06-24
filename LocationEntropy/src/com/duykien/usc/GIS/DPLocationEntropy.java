@@ -362,15 +362,15 @@ public class DPLocationEntropy {
 		
 		boolean measureOnly = false; //only measure or run the full experiments
 		
-		int[] Ms = new int[] {1, 2, 5, 10, 20, 30, 40, 50};
+		int[] Ms = new int[] {1, 2, 5, 10, 20, 30};
 		
 //		runBaseline(prefix, L, N, maxM, maxC, ze, df, dataGenerationOutputDir, useM, useMStr, bucketSize, uncutHistogramFile, 1);
 //		runTestFixMAndCVaryEpsilon(prefix, L, N, M, maxM, maxC, ze, df, dataGenerationOutputDir, delta, minSensitivity, kCrowd, useM, useMStr, bucketSize, uncutHistogramFile, C, noisePertubationMethod, rawLocationEntropyFile, epsilons, measureOnly);
-//		runTestFixMAndEpsilonVaryC(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, eps, delta, minSensitivity, kCrowd, useM, useMStr, bucketSize, uncutHistogramFile, startC, endC, noisePertubationMethod, rawLocationEntropyFile, measureOnly);
+		runTestFixMAndEpsilonVaryC(prefix, L, N, M, maxC, ze, df, dataGenerationOutputDir, eps, delta, minSensitivity, kCrowd, useM, useMStr, bucketSize, uncutHistogramFile, startC, endC, noisePertubationMethod, rawLocationEntropyFile, measureOnly);
 		
 		//for runTestFixCAndEpsilonVaryM
-		eps = 5.0;
-		runTestFixCAndEpsilonVaryM(prefix, L, N, maxM, maxC, ze, df, dataGenerationOutputDir, delta, minSensitivity, kCrowd, useM, useMStr, bucketSize, uncutHistogramFile, C, noisePertubationMethod, rawLocationEntropyFile, eps, Ms, measureOnly);
+//		eps = 5.0;
+//		runTestFixCAndEpsilonVaryM(prefix, L, N, maxM, maxC, ze, df, dataGenerationOutputDir, delta, minSensitivity, kCrowd, useM, useMStr, bucketSize, uncutHistogramFile, C, noisePertubationMethod, rawLocationEntropyFile, eps, Ms, measureOnly);
 	}
 
 }

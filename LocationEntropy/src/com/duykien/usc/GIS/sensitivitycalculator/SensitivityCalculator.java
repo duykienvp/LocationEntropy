@@ -116,7 +116,14 @@ public class SensitivityCalculator {
 		}
 	}
 	
+	private static void testFixCVaryN() {
+		int c = 20;
+		for (int n = 1; n < 101; n++)
+			System.out.println(n + "," + boundByNC(n, c));
+	}
+	
 	public static void main(String[] args) {
-		testMaxByAllN();
+		testFixCVaryN();
+//		System.out.println(boundByC(1000));
 	}
 }

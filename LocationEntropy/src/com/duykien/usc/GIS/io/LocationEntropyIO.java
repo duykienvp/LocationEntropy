@@ -2,6 +2,7 @@ package com.duykien.usc.GIS.io;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
@@ -40,6 +41,30 @@ public class LocationEntropyIO {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
+		}
+	}
+	
+	/**
+	 * Write a location entropy file
+	 * @param inputFile
+	 * @return
+	 */
+	public static void writeLocationEntropy(String outputFile, ArrayList<LocationEntropyInfo> data) {
+		try {
+			PrintWriter writer = new PrintWriter(outputFile);
+			
+			for (int i = 0; i < data.size(); i++) {
+				LocationEntropyInfo info = data.get(i);
+				writer.println(info.getLocationId() 
+						+ "," + info.getNumUser() 
+						+ "," + info.getEntropy()
+						+ "," + info.getPrivateEntropy()
+						+ "," + info.getNoise());
+			}
+			
+			writer.close();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 }

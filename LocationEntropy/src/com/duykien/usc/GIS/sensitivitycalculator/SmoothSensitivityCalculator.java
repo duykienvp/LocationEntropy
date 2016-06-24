@@ -67,7 +67,7 @@ public class SmoothSensitivityCalculator {
 			String epsStr = DPUtil.toEpsilonString(eps);
 			String outputFile = FileNameUtil.getSmoothSensitivityInputFile(dataGenerationOutputDir, c, epsStr);
 			PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(outputFile)));
-			for (int n = 1; n < N; n++) {
+			for (int n = 0; n < N; n++) {
 				double maxSensitivityN = calSmoothSensitivityUsing2ndMethod(c, n, eps, delta);
 				if (maxSensitivityN < minSensitivity)
 					break;
@@ -97,7 +97,7 @@ public class SmoothSensitivityCalculator {
 		int endC = Constants.END_C;
 		startC = 5;
 		endC = startC + 1;
-		eps = 5.0/30.0;
+		eps = 1;
 		for (int c = startC; c < endC; c++)
 			calSmoothSensitivity2ndMethod(eps, delta, c, minSensitivity, N, dataGenerationOutputDir);
 
